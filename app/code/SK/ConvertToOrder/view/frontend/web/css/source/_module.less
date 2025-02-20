@@ -1,0 +1,40 @@
+.product-options-wrapper {
+    width: 100%;
+    display: contents;
+}
+
+.option-tier-prices.disabled {
+    opacity: 0.5; /* Make it semi-transparent */
+    pointer-events: none; /* Disable interaction */
+}
+
+.option-tier-prices.active {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+
+.option-tier-prices {
+    display: flex;
+    align-items: center;
+    gap: 10px; /* Adds spacing between elements */
+    margin-bottom: 5px;
+    justify-content: space-between;
+    background: #EEE;
+    padding: 10px;
+}
+
+.option-tier-prices .product-name {
+    font-weight: bold;
+}
+
+.option-tier-prices .price-container {
+    font-size: 14px;
+    color: #333;
+}
+
+.bundle-option-qty {
+    width: 60px;
+    text-align: center;
+    margin-left: auto;
+}
