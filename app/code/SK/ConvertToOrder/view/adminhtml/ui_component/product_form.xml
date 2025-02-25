@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<form xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Ui:etc/ui_configuration.xsd">
+    <dataSource name="product_form_data_source">
+        <argument name="data" xsi:type="array">
+            <item name="js_config" xsi:type="array">
+                <item name="component" xsi:type="string">Magento_Ui/js/form/provider</item>
+            </item>
+        </argument>
+        <dataProvider class="SK\ConvertToOrder\Ui\DataProvider\Product\Form\Modifier\DynamicRowProductDataProvider"
+                      name="product_form_data_source">
+            <settings>
+                <requestFieldName>id</requestFieldName>
+                <primaryFieldName>entity_id</primaryFieldName>
+            </settings>
+        </dataProvider>
+        <!-- <dataProvider class="Magento\Catalog\Ui\DataProvider\Product\Form\ProductDataProvider"
+                      name="product_form_data_source">
+            <settings>
+                <requestFieldName>id</requestFieldName>
+                <primaryFieldName>entity_id</primaryFieldName>
+            </settings>
+        </dataProvider> -->
+    </dataSource>
+
+    <fieldset sortOrder="50" name="heatsink_condition">
+        <settings>
+            <label>Apply condition for Heatsink Selection</label>
+            <collapsible>true</collapsible>
+            <dataScope>data.product.heatsink_condition</dataScope>
+        </settings>
+
+        <dynamicRows name="dynamic_row">
+            <settings>
+                <disabled>false</disabled>
+                <addButtonLabel translate="true">Add</addButtonLabel>
+                <additionalClasses>
+                    <class name="admin__field-wide">true</class>
+                </additionalClasses>
+                <componentType>dynamicRows</componentType>
+                <elementTmpl>ui/dynamic-rows/templates/grid</elementTmpl>
+            </settings>
+            <container name="record" component="Magento_Ui/js/dynamic-rows/record">
+                <argument name="data" xsi:type="array">
+                    <item name="config" xsi:type="array">
+                        <item name="isTemplate" xsi:type="boolean">true</item>
+                        <item name="is_collection" xsi:type="boolean">true</item>
+                        <item name="componentType" xsi:type="string">container</item>
+                        <item name="'positionProvider'" xsi:type="string">container_option</item>
+                    </item>
+                </argument>
+
+                <field name="cpu_option_id" sortOrder="10" formElement="select">
+                    <argument name="data" xsi:type="array">
+                        <item name="config" xsi:type="array">
+                            <item name="dataScope" xsi:type="string">cpu_option_id</item>
+                            <item name="label" xsi:type="string" translate="true">Option Title</item>
+                            <item name="dataType" xsi:type="string">text</item>
+                            <item name="componentType" xsi:type="string">select</item>
+                            <item name="validation" xsi:type="array">
+                                <item name="required-entry" xsi:type="boolean">true</item>
+                            </item>
+                        </item>
+                    </argument>
+                    <formElements>
+                        <select>
+                            <settings>
+                                <options class="SK\ConvertToOrder\Model\Attribute\Source\BundleProductOptions"/>
+                            </settings>
+                        </select>
+                    </formElements>
+                </field>
+                <field name="tdp_greater_than" sortOrder="20" formElement="input">
+                    <argument name="data" xsi:type="array">
+                        <item name="config" xsi:type="array">
+                            <item name="dataScope" xsi:type="string">tdp_greater_than</item>
+                            <item name="label" xsi:type="string" translate="true">TDP(Greater Than)</item>
+                            <item name="dataType" xsi:type="string">text</item>
+                            <item name="componentType" xsi:type="string">text</item>
+                            <item name="validation" xsi:type="array">
+                                <item name="required-entry" xsi:type="boolean">true</item>
+                                <item name="validate-number" xsi:type="boolean">true</item>
+                            </item>
+                        </item>
+                    </argument>
+                </field>
+                <field name="heat_performance" sortOrder="30" formElement="multiselect">
+                    <argument name="data" xsi:type="array">
+                        <item name="config" xsi:type="array">
+                            <item name="dataScope" xsi:type="string">heat_performance</item>
+                            <item name="label" xsi:type="string" translate="true">Heat Performance</item>
+                            <item name="dataType" xsi:type="string">text</item>
+                            <item name="componentType" xsi:type="string">select</item>
+                            <item name="validation" xsi:type="array">
+                                <item name="required-entry" xsi:type="boolean">true</item>
+                            </item>
+                        </item>
+                    </argument>
+                    <formElements>
+                        <multiselect>
+                            <settings>
+                                <options class="SK\ConvertToOrder\Model\Attribute\Source\AvailableHeatsinkPerformance"/>
+                            </settings>
+                        </multiselect>
+                    </formElements>
+                </field>
+                <actionDelete>
+                    <argument name="data" xsi:type="array">
+                        <item name="config" xsi:type="array">
+                            <item name="componentType" xsi:type="string">actionDelete</item>
+                            <item name="dataType" xsi:type="string">text</item>
+                            <item name="fit" xsi:type="boolean">false</item>
+                            <item name="label" xsi:type="string">Actions</item>
+                            <item name="sortOrder" xsi:type="string">60</item>
+                            <item name="additionalClasses" xsi:type="string">data-grid-actions-cell</item>
+                            <item name="template" xsi:type="string">Magento_Backend/dynamic-rows/cells/action-delete
+                            </item>
+                        </item>
+                    </argument>
+                </actionDelete>
+            </container>
+        </dynamicRows>
+    </fieldset>
+</form>

@@ -7,18 +7,23 @@ namespace SK\ConvertToOrder\Model\Attribute\Source;
 use Magento\Eav\Model\Entity\Attribute\Source\AbstractSource;
 use Magento\Catalog\Model\ResourceModel\Product\CollectionFactory;
 use Magento\Catalog\Model\Product\Type;
+use Magento\Catalog\Model\ProductRepository;
+
 
 class BundleProducts extends AbstractSource
 {
-    protected $productCollectionFactory;
+    protected $_bundleOptions = [];
 
-    public function __construct(CollectionFactory $productCollectionFactory)
+    public function __construct(
+        protected CollectionFactory $productCollectionFactory,
+        protected ProductRepository $productRepository)
     {
-        $this->productCollectionFactory = $productCollectionFactory;
     }
 
     /**
-     * Retrieve all grouped product options
+     * Get all bundle products
+     *
+     * @return void
      */
     public function getAllOptions()
     {
@@ -35,5 +40,30 @@ class BundleProducts extends AbstractSource
             }
         }
         return $this->_options;
+    }
+
+    /**
+     * get bundle options
+     *
+     * @param string $sku
+     * @return void
+     */
+    public function getBundleOptions($sku)
+    {
+        try {
+            $this->_bundleOptions = [];
+            $product = $this->productRepository->get($sku);
+            if($product->getId()) {
+                foreach ($product->getExtensionAttributes()->getBundleProductOptions() as $option) {
+                    $this->_bundleOptions[] = ['value' => $option->getOptionId(), 'label' => $option->getTitle()];
+                }
+            }
+            
+            return $this->_bundleOptions;
+
+        } catch(\Magento\Framework\Exception\LocalizedException $e) {
+            return [];
+        } 
+
     }
 }

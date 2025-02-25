@@ -11,9 +11,7 @@ use Magento\Ui\Component\DynamicRows;
 use Magento\Ui\Component\Container;
 use Magento\Ui\Component\Form\Element\DataType\Text;
 use SK\ConvertToOrder\Model\Attribute\Source\BundleProducts as BundleProducts;
-
 use Magento\Eav\Model\ResourceModel\Entity\Attribute\Set\CollectionFactory as AttributeSetCollection;
-
 use Magento\Framework\Stdlib\ArrayManager;
 
 class DynamicRowAttribute extends AbstractModifier
@@ -56,10 +54,18 @@ class DynamicRowAttribute extends AbstractModifier
 
         if ($highlightsData) {
             $highlightsData = $this->serializer->unserialize($highlightsData, true);
+            //print_r($highlightsData);die;
+
+            foreach($highlightsData as $key => $bundle):
+                $highlightsData[$key]['bundle_option_titles'] = $this->bundleProducts->getBundleOptions($bundle['bundle_product']);
+            endforeach;
+            // echo '<pre>';
+            // print_r($highlightsData);
+            // echo '</pre>';die;
             $path = $modelId . '/' . self::DATA_SOURCE_DEFAULT . '/' . $fieldCode;
             $data = $this->arrayManager->set($path, $data, $highlightsData);
         }
-
+        
         
         return $data;
     }
@@ -78,8 +84,6 @@ class DynamicRowAttribute extends AbstractModifier
             null,
             'children'
         );
-
-        
 
         if ($highlightsPath) {
             $meta = $this->arrayManager->merge(
@@ -202,6 +206,7 @@ class DynamicRowAttribute extends AbstractModifier
      */
     protected function initHighlightFieldStructure($meta, $highlightsPath)
     {
+        
         return [
             'arguments' => [
                 'data' => [
@@ -256,13 +261,16 @@ class DynamicRowAttribute extends AbstractModifier
                             'arguments' => [
                                 'data' => [
                                     'config' => [
+                                        'component' => 'SK_ConvertToOrder/js/form/element/dynamic-rows', // Custom JS file
                                         'formElement' => Select::NAME,
                                         'componentType' => Field::NAME,
                                         'dataType' => Text::NAME,
                                         'label' => __('Bundle Option Title'),
                                         'dataScope' => 'bundle_option_title',
-                                        //'require' => '1',
-                                        'options' => []
+                                        //'options' => '${ $.record.bundle_option_titles }', // Dynamically load options
+                                        //'options' => ['record.bundle_option_titles'], // Dynamically load options
+                                        //'deps' => ['record.bundle_product'], // Make it dependent on bundle_product
+                                        //'validation' => ['required-entry' => true],
                                     ],
                                 ],
                             ],

@@ -34,11 +34,33 @@ class OptionProductInfo implements ArgumentInterface
      *
      * @return string
      */
-    public function getProductInfo($_selection): string
+    public function getProductInfo($_selection, $_option): string
     {
         
-        $validators['ttttt'] = $_selection->getData('tdp');
+        $data['option_id'] = $_option->getData('option_id');
+        $data['tdp'] = $_selection->getData('tdp');
+        $data['heatsink_performance'] = $_selection->getData('heatsink_performance');
 
-        return $this->serializer->serialize($validators);
+        return $this->serializer->serialize($data);
     }
+
+    /**
+     * Returns Unserialized Data.
+     *
+     * @return string
+     */
+    public function getUnserializedHeatsinkConditionData($data, $optionId): string
+    {
+        $conditionalOptions = [];
+        $data = $this->serializer->unserialize($data);
+        foreach($data['dynamic_row'] as $rows):
+            if($optionId == $rows['cpu_option_id']):
+                $conditionalOptions = $rows;
+                break;
+            endif;
+        endforeach;
+
+        return !empty($conditionalOptions)? $this->serializer->serialize($conditionalOptions) : '';
+    }
+    
 }

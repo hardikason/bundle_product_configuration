@@ -44,17 +44,6 @@ class BundleOptions extends Action
                 return $resultJson->setData(['error' => true, 'message' => 'Not a bundle product']);
             }
 
-            // $bundleOptions = $product->getExtensionAttributes()->getBundleProductOptions();
-
-            // $options = [];
-            // foreach ($bundleOptions as $option) {
-            //     $options[] = [
-            //         'option_id' => $option->getOptionId(),
-            //         'title' => $option->getTitle(),
-            //         'type' => $option->getType(),
-            //     ];
-            // }
-
             foreach ($product->getExtensionAttributes()->getBundleProductOptions() as $option) {
                 $options[] = ['value' => $option->getOptionId(), 'label' => $option->getTitle()];
             }

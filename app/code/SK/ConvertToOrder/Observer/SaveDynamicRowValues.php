@@ -7,6 +7,7 @@ use Magento\Framework\Event\Observer;
 use Magento\Framework\Event\ObserverInterface;
 use Magento\Framework\App\RequestInterface;
 
+
 class SaveDynamicRowValues implements ObserverInterface
 {
     /**
@@ -34,6 +35,8 @@ class SaveDynamicRowValues implements ObserverInterface
         $wholeRequest = $this->request->getPost();
         $post = $wholeRequest['product'];
 
+        
+
         if (empty($post)) {
             $post = !empty($wholeRequest['variables']['product']) ? $wholeRequest['variables']['product'] : [];
         }
@@ -41,13 +44,22 @@ class SaveDynamicRowValues implements ObserverInterface
             $post[DynamicRowAttribute::PRODUCT_ATTRIBUTE_CODE]
         ) ? $post[DynamicRowAttribute::PRODUCT_ATTRIBUTE_CODE] : '';
 
-        $product->setCompatibleWith($highlights);
-        $requiredParams = ['bundle_product', 'bundle_option_title'];
+        if($highlights) {
+            $product->setCompatibleWith($highlights);
+            $requiredParams = ['bundle_product', 'bundle_option_title'];
 
-        print_r($highlights);die;
-        if (is_array($highlights)) {
-            $highlights = $this->removeEmptyArray($highlights, $requiredParams);
-            $product->setCompatibleWith($this->serializer->serialize($highlights));
+            if (is_array($highlights)) {
+                $highlights = $this->removeEmptyArray($highlights, $requiredParams);
+                $product->setCompatibleWith($this->serializer->serialize($highlights));
+            }
+        }
+        
+        $heatsink_condition = $highlights = isset(
+            $post['heatsink_condition']
+        ) ? $post['heatsink_condition'] : '';
+
+        if (is_array($heatsink_condition)) {
+            $product->setHeatsinkCondition($this->serializer->serialize($heatsink_condition));
         }
     }
 

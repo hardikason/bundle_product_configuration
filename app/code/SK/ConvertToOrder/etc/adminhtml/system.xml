@@ -1,0 +1,29 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Config:etc/system_file.xsd">
+    <system>
+        <tab id="sk_bundle_configuration" translate="label" sortOrder="10">
+            <label>SK Bundle Configuration</label>
+        </tab>
+
+        <section id="bundle_config" showInDefault="1" showInWebsite="0" showInStore="1" sortOrder="10" translate="label">
+            <label>Configuration</label>
+            <tab>sk_bundle_configuration</tab>
+            <resource>SK_ConvertToOrder::sk_bundle_configuration</resource>
+            <group id="general" translate="label comment" sortOrder="10" showInDefault="1" showInWebsite="0" showInStore="1">
+                <label>Configuration</label>
+                <comment>An additional comment helping users to understand the effect when configuring the fields defined in this group.</comment>
+                <field id="enable" translate="label" type="select" sortOrder="1" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Module Enable</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                </field>
+                <field id="cpu_threashold" translate="label" type="text" sortOrder="1" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>CPU threashold to select compatible heatsink</label>
+                </field>
+                <field id="compatible_heasink" translate="label" type="multiselect" sortOrder="1" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Compatible heatsink</label>
+                    <source_model>SK\ConvertToOrder\Model\Attribute\Source\AvailableHeatsinkPerformance</source_model>
+                </field>
+            </group>
+        </section>
+    </system>
+</config>

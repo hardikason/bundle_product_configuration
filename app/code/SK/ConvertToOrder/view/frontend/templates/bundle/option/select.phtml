@@ -17,7 +17,6 @@ use Magento\Bundle\ViewModel\ValidateQuantity;
 //  echo "</pre>"; 
 ?>
 <?php list($_defaultQty, $_canChangeQty) = $block->getDefaultValues(); ?>
-<?php //$defaultSelectedIds = explode(',',$selectedOptions?:''); ?> 
 <?php
 /** @var ValidateQuantity $viewModel */
 $viewModel = $block->getData('validateQuantityViewModel');
@@ -25,6 +24,12 @@ $viewModel = $block->getData('validateQuantityViewModel');
 /** @var OptionProductInfo $optionProductInfoViewModel */
 $optionProductInfoViewModel = $block->getData('optionProductInfoViewModel');
 
+$heatsinkCondition = $block->getProduct()->getHeatsinkCondition();
+$heatsinkCondition = $optionProductInfoViewModel->getUnserializedHeatsinkConditionData($heatsinkCondition, $_option->getId());
+
+// echo "<pre>"; 
+// print_r($heatsinkCondition);
+// echo "</pre>"; 
 
 ?>
 <div class="field option <?= ($_option->getRequired()) ? ' required': '' ?>">
@@ -57,6 +62,9 @@ $optionProductInfoViewModel = $block->getData('optionProductInfoViewModel');
             </select>
             <?php foreach ($_selections as $_selection) : ?>
                 <div id="option-tier-prices-<?= $block->escapeHtmlAttr($_option->getId()) ?>" 
+                    <?php if($_selection->getData('heatsink_performance')): ?>
+                    data-heatsink-performance="<?= $block->escapeHtmlAttr($_selection->getData('heatsink_performance'))?>"
+                    <?php endif; ?>
                     class="option-tier-prices options-<?= $block->escapeHtmlAttr($_option->getId()) ?> options-<?= $block->escapeHtmlAttr($_option->getId()) ?>-<?= $block->escapeHtmlAttr($_selection->getSelectionId()) ?> <?= $_defaultQty && !$block->isSelected($_selection) ? 'disabled': '' ?>">
                     
                         <?= /* @noEscape */ $block->getSelectionTitlePrice($_selection, false) ?>
@@ -66,18 +74,16 @@ $optionProductInfoViewModel = $block->getData('optionProductInfoViewModel');
                             <?= /* @noEscape */ $block->getTierPriceRenderer()->renderTierPrice($_selection) ?>
                             
                         </div>
-                        <div class="options-info-<?= $block->escapeHtmlAttr($_option->getId()) ?>">
-                            <?= 'TDP : '.$block->escapeHtmlAttr($_selection->getData('tdp')) ?>
-                            <?php
-                            echo $optionProductInfoViewModel->getProductInfo($_selection);
-                            ?>
-                        </div>
                         
                         <select class="bundle-option-qty"
                                 name="<?=/* @noEscape */ 'bundle_option_['. $block->escapeHtmlAttr($_option->getId())?>]" 
                                 id="bundle-option-qty-<?= $block->escapeHtmlAttr($_selection->getSelectionId()) ?>"
                                 data-selection-id="<?= $block->escapeHtmlAttr($_selection->getSelectionId()) ?>"
                                 data-option-id="<?= $block->escapeHtmlAttr($_option->getId()) ?>"
+                                <?php if($heatsinkCondition): ?>
+                                data-heatsink-condition="<?= $block->escapeHtmlAttr($heatsinkCondition) ?>"
+                                <?php endif; ?>
+                                data-option-info="<?= $block->escapeHtmlAttr($optionProductInfoViewModel->getProductInfo($_selection, $_option)); ?>"
                                 >
                             <?php for ($i = 0; $i <= 10; $i++): ?>
                                 <option value="<?= $i ?>" 

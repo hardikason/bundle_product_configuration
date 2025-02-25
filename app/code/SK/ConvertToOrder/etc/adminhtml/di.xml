@@ -10,4 +10,10 @@
             </argument>
         </arguments>
     </virtualType>
+
+    <type name="Magento\Catalog\Ui\DataProvider\Product\Form\ProductDataProvider">
+        <arguments>
+            <argument name="dynamicRowModifier" xsi:type="object">SK\ConvertToOrder\Ui\DataProvider\Product\Form\Modifier\DynamicRowProductDataProvider</argument>
+        </arguments>
+    </type>
 </config>

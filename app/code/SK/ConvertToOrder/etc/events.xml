@@ -3,4 +3,7 @@
     <event name="catalog_product_save_before">
         <observer name="product_dynamic_row_attribute" instance="SK\ConvertToOrder\Observer\SaveDynamicRowValues" />
     </event>
+    <event name="catalog_product_save_after">
+        <observer name="product_save_after_assign_to_bundle" instance="SK\ConvertToOrder\Observer\ProductSaveAfter" />
+    </event>
 </config>
