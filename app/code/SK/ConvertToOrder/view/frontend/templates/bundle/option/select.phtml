@@ -65,7 +65,7 @@ $heatsinkCondition = $optionProductInfoViewModel->getUnserializedHeatsinkConditi
                     <?php if($_selection->getData('heatsink_performance')): ?>
                     data-heatsink-performance="<?= $block->escapeHtmlAttr($_selection->getData('heatsink_performance'))?>"
                     <?php endif; ?>
-                    class="option-tier-prices options-<?= $block->escapeHtmlAttr($_option->getId()) ?> options-<?= $block->escapeHtmlAttr($_option->getId()) ?>-<?= $block->escapeHtmlAttr($_selection->getSelectionId()) ?> <?= $_defaultQty && !$block->isSelected($_selection) ? 'disabled': '' ?>">
+                    class="option-tier-prices options-<?= $block->escapeHtmlAttr($_option->getId()) ?> options-<?= $block->escapeHtmlAttr($_option->getId()) ?>-<?= $block->escapeHtmlAttr($_selection->getSelectionId()) ?> <?//= $_defaultQty && !$block->isSelected($_selection) ? 'disabled': '' ?>">
                     
                         <?= /* @noEscape */ $block->getSelectionTitlePrice($_selection, false) ?>
                         <div data-role="selection-tier-prices"

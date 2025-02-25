@@ -75,6 +75,56 @@ class AddProductAttributes implements DataPatchInterface
                 'apply_to' => \Magento\Catalog\Model\Product\Type::TYPE_SIMPLE
             ]
         );
+
+        // Heatsink Performance Attribute
+        $eavSetup->removeAttribute(Product::ENTITY, 'heatsink_performance');
+        $eavSetup->addAttribute(
+            Product::ENTITY,
+            'heatsink_performance',
+            [
+                'group'         => 'General',
+                'type' => 'text',
+                'input' => 'select',
+                'label' => 'Heatsink Performance',
+                'visible' => true,
+                'global' => \Magento\Eav\Model\Entity\Attribute\ScopedAttributeInterface::SCOPE_GLOBAL,
+                'source' => \SK\ConvertToOrder\Model\Attribute\Source\AvailableHeatsinkPerformance::class,
+                'backend' => \Magento\Eav\Model\Entity\Attribute\Backend\ArrayBackend::class,
+                'is_used_in_grid'               => true,
+                'is_visible_in_grid'            => true,
+                'is_filterable_in_grid'         => true,
+                'visible'                       => true,
+                'visible_on_front' => true,
+                'used_in_product_listing' => true,
+                'is_html_allowed_on_front' => true,
+                'required'      => false,
+                'apply_to' => \Magento\Catalog\Model\Product\Type::TYPE_SIMPLE
+            ]
+        );
+
+        // Heatsink Condition Attribute
+        $eavSetup->removeAttribute(Product::ENTITY, 'heatsink_condition');
+        $eavSetup->addAttribute(
+            Product::ENTITY,
+            'heatsink_condition',
+            [
+                'group'         => 'Apply condition for Heatsink Selection',
+                'type' => 'text',
+                'input' => 'text',
+                'label' => 'Heatsink Condition',
+                'visible' => true,
+                'global' => \Magento\Eav\Model\Entity\Attribute\ScopedAttributeInterface::SCOPE_GLOBAL,
+                'is_used_in_grid'               => false,
+                'is_visible_in_grid'            => false,
+                'is_filterable_in_grid'         => false,
+                'visible'                       => true,
+                'visible_on_front' => true,
+                'used_in_product_listing' => true,
+                'is_html_allowed_on_front' => true,
+                'required'      => false,
+                'apply_to' => \Magento\Catalog\Model\Product\Type::TYPE_BUNDLE
+            ]
+        );
     }
 
     public static function getDependencies()

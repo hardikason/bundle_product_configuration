@@ -9,7 +9,7 @@ define([
             
             _init: function initPriceBundle() {
                 this._super();
-               // this.updateOptionQty();
+                this.updateOptionQty();
             },
 
             /**

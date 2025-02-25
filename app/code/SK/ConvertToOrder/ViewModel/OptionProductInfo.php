@@ -52,13 +52,16 @@ class OptionProductInfo implements ArgumentInterface
     public function getUnserializedHeatsinkConditionData($data, $optionId): string
     {
         $conditionalOptions = [];
-        $data = $this->serializer->unserialize($data);
-        foreach($data['dynamic_row'] as $rows):
-            if($optionId == $rows['cpu_option_id']):
-                $conditionalOptions = $rows;
-                break;
-            endif;
-        endforeach;
+        
+        if($data) :
+            $data = $this->serializer->unserialize($data);
+            foreach($data['dynamic_row'] as $rows):
+                if($optionId && $optionId == $rows['cpu_option_id']):
+                    $conditionalOptions = $rows;
+                    break;
+                endif;
+            endforeach;
+        endif;
 
         return !empty($conditionalOptions)? $this->serializer->serialize($conditionalOptions) : '';
     }
