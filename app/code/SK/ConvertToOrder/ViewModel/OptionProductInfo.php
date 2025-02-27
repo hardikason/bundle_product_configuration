@@ -23,18 +23,19 @@ class OptionProductInfo implements ArgumentInterface
      * @param SerializerInterface $serializer
      */
     public function __construct(
-        protected SerializerInterface $serializer,
+        protected SerializerInterface $serializer
     ) {
     }
 
     /**
-     * Returns quantity validator.
+     * Get product info
      *
+     * @param array $_selection
+     * @param array $_option
      * @return string
      */
     public function getProductInfo($_selection, $_option): string
     {
-        
         $data['option_id'] = $_option->getData('option_id');
         $data['tdp'] = $_selection->getData('tdp');
         $data['heatsink_performance'] = $_selection->getData('heatsink_performance');
@@ -45,9 +46,11 @@ class OptionProductInfo implements ArgumentInterface
     /**
      * Returns Unserialized Data.
      *
+     * @param string $data
+     * @param int $optionId
      * @return string
      */
-    public function getUnserializedHeatsinkConditionData($data, $optionId): string
+    public function getHeatsinkConditionData($data, $optionId): string
     {
         $conditionalOptions = [];
         

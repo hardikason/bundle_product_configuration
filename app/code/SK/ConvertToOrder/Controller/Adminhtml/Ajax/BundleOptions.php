@@ -9,24 +9,36 @@ use Magento\Framework\Exception\NoSuchEntityException;
 
 class BundleOptions extends Action
 {
-    protected $resultJsonFactory;
-    protected $productRepository;
-
+    /**
+     * Constructor Initialize
+     *
+     * @param Context $context
+     * @param JsonFactory $resultJsonFactory
+     * @param ProductRepository $productRepository
+     */
     public function __construct(
-        Context $context,
-        JsonFactory $resultJsonFactory,
-        ProductRepository $productRepository
+        protected Context $context,
+        protected JsonFactory $resultJsonFactory,
+        protected ProductRepository $productRepository
     ) {
         parent::__construct($context);
-        $this->resultJsonFactory = $resultJsonFactory;
-        $this->productRepository = $productRepository;
     }
 
+    /**
+     * Check if controller access allowed
+     *
+     * @return void
+     */
     protected function _isAllowed()
     {
         return $this->_authorization->isAllowed('Magento_Catalog::products');
     }
 
+    /**
+     * Get Bundle Options List
+     *
+     * @return string
+     */
     public function execute()
     {
         

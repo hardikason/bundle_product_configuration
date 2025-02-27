@@ -5,6 +5,7 @@
  */
 use Magento\Bundle\ViewModel\ValidateQuantity;
 ?>
+
 <?php /* @var $block \Magento\Bundle\Block\Catalog\Product\View\Type\Bundle\Option\Select */ ?>
 <?php $_option      = $block->getOption(); ?>
 <?php $_selections  = $_option->getSelections(); ?>
@@ -19,7 +20,7 @@ $viewModel = $block->getData('validateQuantityViewModel');
 $optionProductInfoViewModel = $block->getData('optionProductInfoViewModel');
 
 $heatsinkCondition = $block->getProduct()->getHeatsinkCondition();
-$heatsinkCondition = $optionProductInfoViewModel->getUnserializedHeatsinkConditionData($heatsinkCondition, $_option->getId());
+$heatsinkCondition = $optionProductInfoViewModel->getHeatsinkConditionData($heatsinkCondition, $_option->getId());
 
 ?>
 <div class="field option <?= ($_option->getRequired()) ? ' required': '' ?>">
@@ -63,9 +64,9 @@ $heatsinkCondition = $optionProductInfoViewModel->getUnserializedHeatsinkConditi
                                     data-option-info="<?= $escaper->escapeHtmlAttr($optionProductInfoViewModel->getProductInfo($_selection, $_option)); ?>"
                                     >
                                 <?php for ($i = 0; $i <= 10; $i++): ?>
-                                    <option value="<?= $i ?>" 
-                                        <?= $_defaultQty == $i && $block->isSelected($_selection) ? 'selected' : '' ?>>
-                                        <?= $i ?>
+                                    <option value="<?= $escaper->escapeHtmlAttr($i) ?>" 
+                                        <?= $escaper->escapeHtmlAttr($_defaultQty == $i && $block->isSelected($_selection) ? 'selected' : '') ?>>
+                                        <?= $escaper->escapeHtmlAttr($i) ?>
                                     </option>
                                 <?php endfor; ?>
                             </select>

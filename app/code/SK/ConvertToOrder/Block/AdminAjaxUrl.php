@@ -7,13 +7,6 @@ use Magento\Backend\Block\Template\Context;
 
 class AdminAjaxUrl extends Template
 {
-    public function __construct(
-        Context $context,
-        array $data = []
-    ) {
-        parent::__construct($context, $data);
-    }
-
     /**
      * Get the secure admin AJAX URL with a valid secret key
      */

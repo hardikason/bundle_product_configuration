@@ -12,17 +12,23 @@ use Magento\Catalog\Model\Product;
 
 class AddProductAttributes implements DataPatchInterface
 {
-    private $moduleDataSetup;
-    private $eavSetupFactory;
-
+    /**
+     * Constructor function
+     *
+     * @param ModuleDataSetupInterface $moduleDataSetup
+     * @param EavSetupFactory $eavSetupFactory
+     */
     public function __construct(
-        ModuleDataSetupInterface $moduleDataSetup,
-        EavSetupFactory $eavSetupFactory
+        protected ModuleDataSetupInterface $moduleDataSetup,
+        protected EavSetupFactory $eavSetupFactory
     ) {
-        $this->moduleDataSetup = $moduleDataSetup;
-        $this->eavSetupFactory = $eavSetupFactory;
     }
 
+    /**
+     * Add Product Attributes
+     *
+     * @return void
+     */
     public function apply()
     {
         $eavSetup = $this->eavSetupFactory->create(['setup' => $this->moduleDataSetup]);
@@ -127,11 +133,21 @@ class AddProductAttributes implements DataPatchInterface
         );
     }
 
+    /**
+     * FetDependencies function
+     *
+     * @return array
+     */
     public static function getDependencies()
     {
         return [];
     }
 
+    /**
+     * GetAliases function
+     *
+     * @return array
+     */
     public function getAliases()
     {
         return [];

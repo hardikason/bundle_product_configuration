@@ -6,12 +6,11 @@ namespace SK\ConvertToOrder\Model\Attribute\Source;
 
 use Magento\Eav\Model\Entity\Attribute\Source\AbstractSource;
 
-/**
- * [Description AvailableHeatsinkPerformance]
- */
 class AvailableHeatsinkPerformance extends AbstractSource
 {
     /**
+     * Get All Heatsink Perfomace Option
+     *
      * @return array
      */
     public function getAllOptions(): array

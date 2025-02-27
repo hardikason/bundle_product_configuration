@@ -1,7 +1,5 @@
-.product-options-wrapper {
-    width: 100%;
-    display: contents;
-}
+@color-light-grey: #333;
+@color-off-white: #eee;
 
 .bundle-options {
     display: flex;
@@ -9,38 +7,39 @@
     gap: 10px; /* Adds spacing between elements */
     margin-bottom: 5px;
     justify-content: space-between;
-    background: #EEE;
+    background: @color-off-white;
     padding: 10px;
-}
-
-.bundle-options.disabled {
-    opacity: 0.5; /* Make it semi-transparent */
-    pointer-events: none; /* Disable interaction */
-}
-
-.bundle-options.active {
-    opacity: 1;
-    pointer-events: auto;
-}
-
-.bundle-options .product-name {
-    font-weight: bold;
-}
-
-.bundle-options .price-container {
-    font-size: 14px;
-    color: #333;
+    &.active {
+        opacity: 1;
+        pointer-events: auto;
+    }
+    &.disabled {
+        opacity: .5; /* Make it semi-transparent */
+        pointer-events: none; /* Disable interaction */
+    }
+    .product-name {
+        font-weight: bold;
+    }
+    .price-container {
+        color: @color-light-grey;
+        font-size: 14px;
+    }
 }
 
 .bundle-option-qty {
-    width: 60px;
-    text-align: center;
     margin-left: auto;
+    text-align: center;
+    width: 60px;
 }
 
 .hide-block {
-    visibility: hidden;
     position: absolute;
+    visibility: hidden;
+}
+
+.product-options-wrapper {
+    display: contents;
+    width: 100%;
 }
 
 .product-add-form .product-options-wrapper .fieldset-bundle-options .field .control {

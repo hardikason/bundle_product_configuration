@@ -12,8 +12,20 @@ use Magento\Framework\App\RequestInterface;
 
 class BundleProductOptions extends AbstractSource
 {
+    /**
+     * Bundle Option
+     *
+     * @var array
+     */
     protected $_bundleProductOptions = [];
 
+    /**
+     * Dependency Initilization
+     *
+     * @param CollectionFactory $productCollectionFactory
+     * @param ProductRepository $productRepository
+     * @param RequestInterface $request
+     */
     public function __construct(
         protected CollectionFactory $productCollectionFactory,
         protected ProductRepository $productRepository,
@@ -22,7 +34,7 @@ class BundleProductOptions extends AbstractSource
     }
 
     /**
-     * get bundle options
+     * Get bundle options
      *
      * @return array
      */
@@ -41,7 +53,10 @@ class BundleProductOptions extends AbstractSource
 
             if ($product->getExtensionAttributes()->getBundleProductOptions()) {
                 foreach ($product->getExtensionAttributes()->getBundleProductOptions() as $option) {
-                    $this->_bundleProductOptions[] = ['value' => $option->getOptionId(), 'label' => $option->getTitle()];
+                    $this->_bundleProductOptions[] = [
+                                                        'value' => $option->getOptionId(),
+                                                        'label' => $option->getTitle()
+                                                    ];
                 }
             }
             

@@ -40,6 +40,7 @@
                         <item name="is_collection" xsi:type="boolean">true</item>
                         <item name="componentType" xsi:type="string">container</item>
                         <item name="'positionProvider'" xsi:type="string">container_option</item>
+                        
                     </item>
                 </argument>
 
@@ -183,7 +184,7 @@
                         </select>
                     </formElements>
                 </field>
-                <field name="bundle_option" sortOrder="30" formElement="select">
+                <field name="bundle_option" sortOrder="20" formElement="select">
                     <argument name="data" xsi:type="array">
                         <item name="config" xsi:type="array">
                             <item name="component" xsi:type="string">SK_ConvertToOrder/js/form/element/dr-bundle-option</item>
@@ -198,6 +199,16 @@
                         </item>
                     </argument>
                 </field>
+                <!-- <field name="new_bundle_option" sortOrder="30" formElement="input">
+                    <argument name="data" xsi:type="array">
+                        <item name="config" xsi:type="array">
+                            <item name="dataScope" xsi:type="string">new_bundle_option</item>
+                            <item name="label" xsi:type="string" translate="true">New Bundle Option</item>
+                            <item name="dataType" xsi:type="string">text</item>
+                            <item name="componentType" xsi:type="string">text</item>
+                        </item>
+                    </argument>
+                </field> -->
                 <actionDelete>
                     <argument name="data" xsi:type="array">
                         <item name="config" xsi:type="array">

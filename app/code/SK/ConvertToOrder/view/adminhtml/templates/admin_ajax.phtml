@@ -1,6 +1,5 @@
-<script type="text/javascript">
+<script>
     require(['jquery'], function ($) {
-        window.adminAjaxUrl = '<?= $block->getAjaxUrl(); ?>';
+        window.adminAjaxUrl = '<?= $escaper->escapeJs($block->getAjaxUrl()); ?>';
     });
-    
 </script>

@@ -11,7 +11,20 @@ use Magento\Ui\DataProvider\Modifier\PoolInterface;
 
 class DynamicRowProductDataProvider extends ProductDataProvider
 {
-    
+    /**
+     * Constructor Initialize
+     *
+     * @param string $name
+     * @param string $primaryFieldName
+     * @param string $requestFieldName
+     * @param CollectionFactory $collectionFactory
+     * @param PoolInterface $pool
+     * @param LocatorInterface $locator
+     * @param RequestInterface $request
+     * @param JsonHelper $jsonHelper
+     * @param array $data
+     * @param array $meta
+     */
     public function __construct(
         $name,
         $primaryFieldName,
@@ -56,7 +69,6 @@ class DynamicRowProductDataProvider extends ProductDataProvider
                 $data[$productId]['product']['compatible_with'] = $decodedData ?? [];
             }
         }
-
         
         return $data;
     }

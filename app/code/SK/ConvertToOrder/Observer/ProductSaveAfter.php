@@ -48,15 +48,16 @@ class ProductSaveAfter implements ObserverInterface
 
         if (!empty($compatibleProducts)) {
             $compatibleProducts = $this->serializer->unserialize($compatibleProducts);
+            
             if (isset($compatibleProducts['dynamic_row'])) {
+
                 foreach ($compatibleProducts['dynamic_row'] as $bundle) {
                     $bundleProductId = $bundle['bundle_product'];
-                    $bundleOptionTitle = $bundle['bundle_option'];
-    
-                    $this->assignProductToBundle($bundleProductId, $simpleProductSku, $bundleOptionTitle);
+                    $bundleOptionId = $bundle['bundle_option'];
+
+                    $this->assignProductToBundle($bundleProductId, $simpleProductSku, $bundleOptionId);
                 }
             }
-            
         }
     }
 

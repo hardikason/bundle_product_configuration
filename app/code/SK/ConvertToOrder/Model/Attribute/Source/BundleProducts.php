@@ -11,8 +11,19 @@ use Magento\Catalog\Model\ProductRepository;
 
 class BundleProducts extends AbstractSource
 {
+    /**
+     * Bundle Option
+     *
+     * @var array
+     */
     protected $_bundleOptions = [];
 
+    /**
+     * Dependency Initilization
+     *
+     * @param CollectionFactory $productCollectionFactory
+     * @param ProductRepository $productRepository
+     */
     public function __construct(
         protected CollectionFactory $productCollectionFactory,
         protected ProductRepository $productRepository
@@ -42,7 +53,7 @@ class BundleProducts extends AbstractSource
     }
 
     /**
-     * get bundle options
+     * Get bundle options
      *
      * @param string $sku
      * @return void
