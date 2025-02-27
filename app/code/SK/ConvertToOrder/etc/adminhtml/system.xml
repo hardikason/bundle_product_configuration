@@ -19,10 +19,6 @@
                 <field id="cpu_threashold" translate="label" type="text" sortOrder="1" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>CPU threashold to select compatible heatsink</label>
                 </field>
-                <field id="compatible_heasink" translate="label" type="multiselect" sortOrder="1" showInDefault="1" showInWebsite="1" showInStore="1">
-                    <label>Compatible heatsink</label>
-                    <source_model>SK\ConvertToOrder\Model\Attribute\Source\AvailableHeatsinkPerformance</source_model>
-                </field>
             </group>
         </section>
     </system>

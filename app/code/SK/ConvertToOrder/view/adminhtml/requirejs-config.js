@@ -1,12 +1,6 @@
 var config = {
     deps: [
-        "SK_ConvertToOrder/js/dynamic-rows"
+        "SK_ConvertToOrder/js/form/element/dr-bundle-product",
+        "SK_ConvertToOrder/js/form/element/dr-bundle-option"
     ]
-    // config: {
-    //     mixins: {
-    //         'Magento_Ui/js/dynamic-rows/dynamic-rows': {
-    //             'SK_ConvertToOrder/js/dynamic-rows': true
-    //         }
-    //     }
-    // }
 };

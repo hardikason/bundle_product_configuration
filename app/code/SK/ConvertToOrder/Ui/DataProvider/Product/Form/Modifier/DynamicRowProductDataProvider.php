@@ -43,20 +43,23 @@ class DynamicRowProductDataProvider extends ProductDataProvider
         if ($productId) {
             // Fetch saved custom field data from the product
             $heatsinkConditionData = $product->getCustomAttribute('heatsink_condition');
-            // echo '<pre>';
-            // print_r($heatsinkConditionData->getValue());
-            // die;
+            
             if ($heatsinkConditionData) {
                 
                 $decodedData = $this->jsonHelper->jsonDecode($heatsinkConditionData->getValue());
                 $data[$productId]['product']['heatsink_condition'] = $decodedData ?? [];
             }
+
+            $compatible_with = $product->getCustomAttribute('compatible_with');
+            
+            if ($compatible_with) {
+                
+                $decodedData = $this->jsonHelper->jsonDecode($compatible_with->getValue());
+                $data[$productId]['product']['compatible_with'] = $decodedData ?? [];
+            }
         }
 
-        // echo '<pre>';
-        //     print_r($data);
-        //     die;
-
+        
         return $data;
     }
 

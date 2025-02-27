@@ -117,7 +117,7 @@ class AddProductAttributes implements DataPatchInterface
                 'is_used_in_grid'               => false,
                 'is_visible_in_grid'            => false,
                 'is_filterable_in_grid'         => false,
-                'visible'                       => true,
+                'visible'                       => false,
                 'visible_on_front' => true,
                 'used_in_product_listing' => true,
                 'is_html_allowed_on_front' => true,

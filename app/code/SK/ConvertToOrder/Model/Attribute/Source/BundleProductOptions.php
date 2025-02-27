@@ -39,7 +39,7 @@ class BundleProductOptions extends AbstractSource
                 return [['value' => '', 'label' => __('Not a Bundle Product')]];
             }
 
-            if($product->getId()) {
+            if($product->getExtensionAttributes()->getBundleProductOptions()) {
                 foreach ($product->getExtensionAttributes()->getBundleProductOptions() as $option) {
                     $this->_bundleProductOptions[] = ['value' => $option->getOptionId(), 'label' => $option->getTitle()];
                 }

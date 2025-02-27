@@ -14,13 +14,6 @@
                 <primaryFieldName>entity_id</primaryFieldName>
             </settings>
         </dataProvider>
-        <!-- <dataProvider class="Magento\Catalog\Ui\DataProvider\Product\Form\ProductDataProvider"
-                      name="product_form_data_source">
-            <settings>
-                <requestFieldName>id</requestFieldName>
-                <primaryFieldName>entity_id</primaryFieldName>
-            </settings>
-        </dataProvider> -->
     </dataSource>
 
     <fieldset sortOrder="50" name="heatsink_condition">
@@ -54,7 +47,7 @@
                     <argument name="data" xsi:type="array">
                         <item name="config" xsi:type="array">
                             <item name="dataScope" xsi:type="string">cpu_option_id</item>
-                            <item name="label" xsi:type="string" translate="true">Option Title</item>
+                            <item name="label" xsi:type="string" translate="true">Select CPU Option</item>
                             <item name="dataType" xsi:type="string">text</item>
                             <item name="componentType" xsi:type="string">select</item>
                             <item name="validation" xsi:type="array">
@@ -74,7 +67,7 @@
                     <argument name="data" xsi:type="array">
                         <item name="config" xsi:type="array">
                             <item name="dataScope" xsi:type="string">tdp_greater_than</item>
-                            <item name="label" xsi:type="string" translate="true">TDP(Greater Than)</item>
+                            <item name="label" xsi:type="string" translate="true">TDP(Greater Than Equal To)</item>
                             <item name="dataType" xsi:type="string">text</item>
                             <item name="componentType" xsi:type="string">text</item>
                             <item name="validation" xsi:type="array">
@@ -84,7 +77,27 @@
                         </item>
                     </argument>
                 </field>
-                <field name="heat_performance" sortOrder="30" formElement="multiselect">
+                <field name="heatsink_option_id" sortOrder="30" formElement="select">
+                    <argument name="data" xsi:type="array">
+                        <item name="config" xsi:type="array">
+                            <item name="dataScope" xsi:type="string">heatsink_option_id</item>
+                            <item name="label" xsi:type="string" translate="true">Select Heatsink Option</item>
+                            <item name="dataType" xsi:type="string">text</item>
+                            <item name="componentType" xsi:type="string">select</item>
+                            <item name="validation" xsi:type="array">
+                                <item name="required-entry" xsi:type="boolean">true</item>
+                            </item>
+                        </item>
+                    </argument>
+                    <formElements>
+                        <select>
+                            <settings>
+                                <options class="SK\ConvertToOrder\Model\Attribute\Source\BundleProductOptions"/>
+                            </settings>
+                        </select>
+                    </formElements>
+                </field>
+                <field name="heat_performance" sortOrder="40" formElement="select">
                     <argument name="data" xsi:type="array">
                         <item name="config" xsi:type="array">
                             <item name="dataScope" xsi:type="string">heat_performance</item>
@@ -97,12 +110,93 @@
                         </item>
                     </argument>
                     <formElements>
-                        <multiselect>
+                        <select>
                             <settings>
                                 <options class="SK\ConvertToOrder\Model\Attribute\Source\AvailableHeatsinkPerformance"/>
                             </settings>
-                        </multiselect>
+                        </select>
                     </formElements>
+                </field>
+                <actionDelete>
+                    <argument name="data" xsi:type="array">
+                        <item name="config" xsi:type="array">
+                            <item name="componentType" xsi:type="string">actionDelete</item>
+                            <item name="dataType" xsi:type="string">text</item>
+                            <item name="fit" xsi:type="boolean">false</item>
+                            <item name="label" xsi:type="string">Actions</item>
+                            <item name="sortOrder" xsi:type="string">60</item>
+                            <item name="additionalClasses" xsi:type="string">data-grid-actions-cell</item>
+                            <item name="template" xsi:type="string">Magento_Backend/dynamic-rows/cells/action-delete
+                            </item>
+                        </item>
+                    </argument>
+                </actionDelete>
+            </container>
+        </dynamicRows>
+    </fieldset>
+    <fieldset sortOrder="60" name="compatible_with">
+        <settings>
+            <label>Assign Product to Bundles</label>
+            <collapsible>true</collapsible>
+            <dataScope>data.product.compatible_with</dataScope>
+        </settings>
+
+        <dynamicRows name="dynamic_row">
+            <settings>
+                <disabled>false</disabled>
+                <addButtonLabel translate="true">Add</addButtonLabel>
+                <additionalClasses>
+                    <class name="admin__field-wide">true</class>
+                </additionalClasses>
+                <componentType>dynamicRows</componentType>
+                <elementTmpl>ui/dynamic-rows/templates/grid</elementTmpl>
+                
+            </settings>
+            <container name="record" component="Magento_Ui/js/dynamic-rows/record">
+                <argument name="data" xsi:type="array">
+                    <item name="config" xsi:type="array">
+                        <item name="isTemplate" xsi:type="boolean">true</item>
+                        <item name="is_collection" xsi:type="boolean">true</item>
+                        <item name="componentType" xsi:type="string">container</item>
+                        <item name="'positionProvider'" xsi:type="string">container_option</item>
+                    </item>
+                </argument>
+
+                <field name="bundle_product" sortOrder="10" formElement="select">
+                    <argument name="data" xsi:type="array">
+                        <item name="config" xsi:type="array">
+                            <item name="dataScope" xsi:type="string">bundle_product</item>
+                            <item name="label" xsi:type="string" translate="true">Bundle Product</item>
+                            <item name="dataType" xsi:type="string">text</item>
+                            <item name="componentType" xsi:type="string">field</item>
+                            <item name="validation" xsi:type="array">
+                                <item name="required-entry" xsi:type="boolean">true</item>
+                            </item>
+                            <item name="component" xsi:type="string">SK_ConvertToOrder/js/form/element/dr-bundle-product</item>
+                        </item>
+                    </argument>
+                    <formElements>
+                        <select>
+                            <settings>
+                                <options class="SK\ConvertToOrder\Model\Attribute\Source\BundleProducts"/>
+                            </settings>
+                        </select>
+                    </formElements>
+                </field>
+                <field name="bundle_option" sortOrder="30" formElement="select">
+                    <argument name="data" xsi:type="array">
+                        <item name="config" xsi:type="array">
+                            <item name="component" xsi:type="string">SK_ConvertToOrder/js/form/element/dr-bundle-option</item>
+                            <item name="dataScope" xsi:type="string">bundle_option</item>
+                            <item name="label" xsi:type="string" translate="true">Bundle Option</item>
+                            <item name="dataType" xsi:type="string">text</item>
+                            <item name="componentType" xsi:type="string">field</item>
+                            <item name="default" xsi:type="string">$parent.bundle_product:value</item>
+                            <item name="validation" xsi:type="array">
+                                <item name="required-entry" xsi:type="boolean">true</item>
+                            </item>
+                        </item>
+                    </argument>
                 </field>
                 <actionDelete>
                     <argument name="data" xsi:type="array">

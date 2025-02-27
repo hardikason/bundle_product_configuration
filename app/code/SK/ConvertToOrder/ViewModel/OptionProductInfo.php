@@ -9,6 +9,8 @@ namespace SK\ConvertToOrder\ViewModel;
 
 use Magento\Framework\Serialize\Serializer\Json;
 use Magento\Framework\View\Element\Block\ArgumentInterface;
+use Magento\Framework\App\Config\ScopeConfigInterface;
+use Magento\Framework\Serialize\SerializerInterface;
 
 /**
  * ViewModel for Bundle Option Block
@@ -16,17 +18,29 @@ use Magento\Framework\View\Element\Block\ArgumentInterface;
 class OptionProductInfo implements ArgumentInterface
 {
     /**
-     * @var Json
+     * module enable path
+     * 
      */
-    private $serializer;
+    const MODULE_ENABLE = 'bundle_config/general/enable';
 
     /**
-     * @param Json $serializer
+     * Constructor function
+     *
+     * @param SerializerInterface $serializer
+     * @param ScopeConfigInterface $scopeConfig
      */
     public function __construct(
-        Json $serializer
+        protected SerializerInterface $serializer,
+        protected ScopeConfigInterface $scopeConfig
     ) {
-        $this->serializer = $serializer;
+    }
+
+    public function isModuleEnabled()
+    {
+        return $this->scopeConfig->getValue(
+                self::MODULE_ENABLE,
+                \Magento\Store\Model\ScopeInterface::SCOPE_STORE
+                );
     }
 
     /**

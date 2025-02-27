@@ -11,7 +11,7 @@
             <container name="bundle.options.container" htmlTag="div" htmlClass="bundle-options-container" after="-"/>
         </referenceContainer>
         <referenceBlock name="product.info.bundle.options.select">
-            <action method="setTemplate">
+            <action method="setTemplate" ifconfig="bundle_config/general/enable">
                 <argument name="template" xsi:type="string">SK_ConvertToOrder::bundle/option/select.phtml</argument>
             </action>
             <arguments>

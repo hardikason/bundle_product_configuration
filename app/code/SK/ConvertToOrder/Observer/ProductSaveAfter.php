@@ -38,16 +38,14 @@ class ProductSaveAfter implements ObserverInterface
         $simpleProductSku = $product->getSku();
 
         // Get compatible products from request data
-        $compatibleProducts = $product->getData('compatible_with');
+        $compatibleProducts = $product->getCompatibleWith();
 
         if (!empty($compatibleProducts)) {
             $compatibleProducts = $this->serializer->unserialize($compatibleProducts);
-            // echo '<pre>';
-            // print_r($compatibleProducts);
-            // die;
-            foreach ($compatibleProducts as $bundle) {
+            
+            foreach ($compatibleProducts['dynamic_row'] as $bundle) {
                 $bundleProductId = $bundle['bundle_product'];
-                $bundleOptionTitle = $bundle['bundle_option_title'];
+                $bundleOptionTitle = $bundle['bundle_option'];
 
                 $this->assignProductToBundle($bundleProductId, $simpleProductSku, $bundleOptionTitle);
             }

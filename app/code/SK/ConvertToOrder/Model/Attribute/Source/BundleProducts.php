@@ -31,7 +31,7 @@ class BundleProducts extends AbstractSource
             $collection = $this->productCollectionFactory->create()
                 ->addAttributeToSelect('name')
                 ->addAttributeToFilter('type_id', Type::TYPE_BUNDLE); 
-
+            $this->_options[] = ['value' => '', 'label' => '-- select bundle product --'];
             foreach ($collection as $product) {
                 $this->_options[] = [
                     'label' => $product->getName(),
@@ -54,6 +54,7 @@ class BundleProducts extends AbstractSource
             $this->_bundleOptions = [];
             $product = $this->productRepository->get($sku);
             if($product->getId()) {
+                
                 foreach ($product->getExtensionAttributes()->getBundleProductOptions() as $option) {
                     $this->_bundleOptions[] = ['value' => $option->getOptionId(), 'label' => $option->getTitle()];
                 }

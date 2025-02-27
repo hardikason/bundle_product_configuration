@@ -1,7 +1,4 @@
 var config = {
-    // deps: [
-    //     "SK_ConvertToOrder/js/custom-bundle"
-    // ],
     config: {
         mixins: {
             'Magento_Bundle/js/price-bundle': {
