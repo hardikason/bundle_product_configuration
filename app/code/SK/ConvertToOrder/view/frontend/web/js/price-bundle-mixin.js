@@ -33,13 +33,20 @@ define([
                     console.log('optionInfo ', optionInfo);
                     
                     $("[data-heatsink-performance]").removeClass("disabled", false);
-                    if(newQty > 0 && heatsinkCondition) {
+
+                    console.log($("[data-heatsink-performance]").data('option-id'), Number(heatsinkCondition.heatsink_option_id));
+                    let heatsinkOptionId = $("[data-heatsink-performance]").data('option-id');
+                    let configuredHeatsinkOptionId = Number(heatsinkCondition.heatsink_option_id);
+
+                    if(newQty > 0 && heatsinkCondition && heatsinkOptionId == configuredHeatsinkOptionId) {
 
                         if(Number(optionInfo.tdp) >= (heatsinkCondition.tdp_greater_than)) {
                             
                             $("[data-heatsink-performance]").each(function() {
                                 
-                                if (!heatsinkCondition.heat_performance.includes($(this).data("heatsink-performance"))) {
+                                if (heatsinkCondition.heat_performance != $(this).data("heatsink-performance")
+                                    //&& !heatsinkCondition.heat_performance.includes($(this).data("heatsink-performance"))
+                                ) {
                                     $(this).addClass("disabled", true);
                                 }
                                 
@@ -47,7 +54,9 @@ define([
                         } else{
                             $("[data-heatsink-performance]").each(function() {
                                 
-                                if (heatsinkCondition.heat_performance.includes($(this).data("heatsink-performance"))) {
+                                if (heatsinkCondition.heat_performance == $(this).data("heatsink-performance")
+                                   // && heatsinkCondition.heat_performance.includes($(this).data("heatsink-performance"))
+                                ) {
                                     $(this).addClass("disabled", true);
                                 }
                                 
@@ -72,7 +81,7 @@ define([
                         
                         $('.options-' + optionId).removeClass('active', false).removeClass('disabled', false); // Disable all
                         
-                        if(configureId && newQty == 0 && optionInfo.option_id == heatsinkCondition.cpu_option_id) {
+                        if(newQty == 0 && optionInfo.option_id == heatsinkCondition.cpu_option_id) {
                             $('select[name="bundle_option_[' + heatsinkCondition.heatsink_option_id + ']"]').val(newQty).trigger('change');
                             $('input[name="bundle_option_qty[' + heatsinkCondition.heatsink_option_id + ']"]').val(newQty).trigger('change');
                             $('.options-' + heatsinkCondition.heatsink_option_id).removeClass('active', false).removeClass('disabled', false); // Disable all

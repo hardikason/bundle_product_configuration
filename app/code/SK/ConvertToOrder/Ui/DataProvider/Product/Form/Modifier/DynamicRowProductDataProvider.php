@@ -9,7 +9,6 @@ use Magento\Framework\App\RequestInterface;
 use Magento\Framework\Json\Helper\Data as JsonHelper;
 use Magento\Ui\DataProvider\Modifier\PoolInterface;
 
-
 class DynamicRowProductDataProvider extends ProductDataProvider
 {
     
@@ -24,7 +23,6 @@ class DynamicRowProductDataProvider extends ProductDataProvider
         protected JsonHelper $jsonHelper,
         array $data = [],
         array $meta = [],
-        
     ) {
         parent::__construct($name, $primaryFieldName, $requestFieldName, $collectionFactory, $pool, $meta, $data);
     }
@@ -62,6 +60,4 @@ class DynamicRowProductDataProvider extends ProductDataProvider
         
         return $data;
     }
-
-    
 }

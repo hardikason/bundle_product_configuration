@@ -1,4 +1,4 @@
-<?php 
+<?php
 
 declare(strict_types=1);
 
@@ -17,8 +17,8 @@ class BundleProductOptions extends AbstractSource
     public function __construct(
         protected CollectionFactory $productCollectionFactory,
         protected ProductRepository $productRepository,
-        protected RequestInterface $request)
-    {
+        protected RequestInterface $request
+    ) {
     }
 
     /**
@@ -39,7 +39,7 @@ class BundleProductOptions extends AbstractSource
                 return [['value' => '', 'label' => __('Not a Bundle Product')]];
             }
 
-            if($product->getExtensionAttributes()->getBundleProductOptions()) {
+            if ($product->getExtensionAttributes()->getBundleProductOptions()) {
                 foreach ($product->getExtensionAttributes()->getBundleProductOptions() as $option) {
                     $this->_bundleProductOptions[] = ['value' => $option->getOptionId(), 'label' => $option->getTitle()];
                 }
@@ -47,9 +47,8 @@ class BundleProductOptions extends AbstractSource
             
             return $this->_bundleProductOptions;
 
-        } catch(\Magento\Framework\Exception\LocalizedException $e) {
+        } catch (\Magento\Framework\Exception\LocalizedException $e) {
             return [];
-        } 
-
+        }
     }
 }

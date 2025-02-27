@@ -9,7 +9,6 @@ namespace SK\ConvertToOrder\ViewModel;
 
 use Magento\Framework\Serialize\Serializer\Json;
 use Magento\Framework\View\Element\Block\ArgumentInterface;
-use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Framework\Serialize\SerializerInterface;
 
 /**
@@ -17,30 +16,15 @@ use Magento\Framework\Serialize\SerializerInterface;
  */
 class OptionProductInfo implements ArgumentInterface
 {
-    /**
-     * module enable path
-     * 
-     */
-    const MODULE_ENABLE = 'bundle_config/general/enable';
 
     /**
      * Constructor function
      *
      * @param SerializerInterface $serializer
-     * @param ScopeConfigInterface $scopeConfig
      */
     public function __construct(
         protected SerializerInterface $serializer,
-        protected ScopeConfigInterface $scopeConfig
     ) {
-    }
-
-    public function isModuleEnabled()
-    {
-        return $this->scopeConfig->getValue(
-                self::MODULE_ENABLE,
-                \Magento\Store\Model\ScopeInterface::SCOPE_STORE
-                );
     }
 
     /**
@@ -67,17 +51,19 @@ class OptionProductInfo implements ArgumentInterface
     {
         $conditionalOptions = [];
         
-        if($data) :
+        if ($data):
             $data = $this->serializer->unserialize($data);
-            foreach($data['dynamic_row'] as $rows):
-                if($optionId && $optionId == $rows['cpu_option_id']):
-                    $conditionalOptions = $rows;
-                    break;
-                endif;
-            endforeach;
+            if (isset($data['dynamic_row'])) {
+                foreach ($data['dynamic_row'] as $rows):
+                    if ($optionId && $optionId == $rows['cpu_option_id']):
+                        $conditionalOptions = $rows;
+                        break;
+                    endif;
+                endforeach;
+            }
+            
         endif;
 
-        return !empty($conditionalOptions)? $this->serializer->serialize($conditionalOptions) : '';
+        return is_array($conditionalOptions)? $this->serializer->serialize($conditionalOptions) : '';
     }
-    
 }

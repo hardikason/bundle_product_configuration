@@ -9,6 +9,7 @@ use Magento\Catalog\Model\ProductRepository;
 use Magento\Framework\Exception\LocalizedException;
 use Magento\Bundle\Api\ProductLinkManagementAddChildrenInterface;
 use Magento\Bundle\Api\Data\LinkInterfaceFactory;
+use Psr\Log\LoggerInterface;
 
 class ProductSaveAfter implements ObserverInterface
 {
@@ -16,12 +17,17 @@ class ProductSaveAfter implements ObserverInterface
      * Dependency Initilization
      *
      * @param \Magento\Framework\Serialize\SerializerInterface $serializer
+     * @param ProductRepository $productRepository
+     * @param ProductLinkManagementAddChildrenInterface $productLinkManagement
+     * @param LinkInterfaceFactory $linkInterfaceFactory
+     * @param LoggerInterface $logger
      */
     public function __construct(
         protected \Magento\Framework\Serialize\SerializerInterface $serializer,
         protected ProductRepository $productRepository,
         protected ProductLinkManagementAddChildrenInterface $productLinkManagement,
-        protected LinkInterfaceFactory $linkInterfaceFactory 
+        protected LinkInterfaceFactory $linkInterfaceFactory,
+        protected LoggerInterface $logger
     ) {
     }
 
@@ -42,13 +48,15 @@ class ProductSaveAfter implements ObserverInterface
 
         if (!empty($compatibleProducts)) {
             $compatibleProducts = $this->serializer->unserialize($compatibleProducts);
-            
-            foreach ($compatibleProducts['dynamic_row'] as $bundle) {
-                $bundleProductId = $bundle['bundle_product'];
-                $bundleOptionTitle = $bundle['bundle_option'];
-
-                $this->assignProductToBundle($bundleProductId, $simpleProductSku, $bundleOptionTitle);
+            if (isset($compatibleProducts['dynamic_row'])) {
+                foreach ($compatibleProducts['dynamic_row'] as $bundle) {
+                    $bundleProductId = $bundle['bundle_product'];
+                    $bundleOptionTitle = $bundle['bundle_option'];
+    
+                    $this->assignProductToBundle($bundleProductId, $simpleProductSku, $bundleOptionTitle);
+                }
             }
+            
         }
     }
 
@@ -83,9 +91,8 @@ class ProductSaveAfter implements ObserverInterface
 
             return "Product successfully added!";
            
-        }               
-        catch(LocalizedException $e) {
-            echo $e->getMessage();
+        } catch (LocalizedException $e) {
+            $this->logger->debug($e->getMessage());
         }
     }
 }

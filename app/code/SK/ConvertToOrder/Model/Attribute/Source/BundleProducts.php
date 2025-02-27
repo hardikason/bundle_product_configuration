@@ -1,4 +1,4 @@
-<?php 
+<?php
 
 declare(strict_types=1);
 
@@ -9,15 +9,14 @@ use Magento\Catalog\Model\ResourceModel\Product\CollectionFactory;
 use Magento\Catalog\Model\Product\Type;
 use Magento\Catalog\Model\ProductRepository;
 
-
 class BundleProducts extends AbstractSource
 {
     protected $_bundleOptions = [];
 
     public function __construct(
         protected CollectionFactory $productCollectionFactory,
-        protected ProductRepository $productRepository)
-    {
+        protected ProductRepository $productRepository
+    ) {
     }
 
     /**
@@ -30,7 +29,7 @@ class BundleProducts extends AbstractSource
         if (!$this->_options) {
             $collection = $this->productCollectionFactory->create()
                 ->addAttributeToSelect('name')
-                ->addAttributeToFilter('type_id', Type::TYPE_BUNDLE); 
+                ->addAttributeToFilter('type_id', Type::TYPE_BUNDLE);
             $this->_options[] = ['value' => '', 'label' => '-- select bundle product --'];
             foreach ($collection as $product) {
                 $this->_options[] = [
@@ -53,7 +52,7 @@ class BundleProducts extends AbstractSource
         try {
             $this->_bundleOptions = [];
             $product = $this->productRepository->get($sku);
-            if($product->getId()) {
+            if ($product->getId()) {
                 
                 foreach ($product->getExtensionAttributes()->getBundleProductOptions() as $option) {
                     $this->_bundleOptions[] = ['value' => $option->getOptionId(), 'label' => $option->getTitle()];
@@ -62,9 +61,8 @@ class BundleProducts extends AbstractSource
             
             return $this->_bundleOptions;
 
-        } catch(\Magento\Framework\Exception\LocalizedException $e) {
+        } catch (\Magento\Framework\Exception\LocalizedException $e) {
             return [];
-        } 
-
+        }
     }
 }
