@@ -12,6 +12,7 @@ use Magento\Bundle\Api\Data\LinkInterfaceFactory;
 use Psr\Log\LoggerInterface;
 use Magento\Bundle\Api\Data\OptionInterfaceFactory;
 use Magento\Bundle\Model\Option\SaveAction;
+use Magento\Catalog\Model\ProductFactory;
 
 class ProductSaveAfter implements ObserverInterface
 {
@@ -31,7 +32,8 @@ class ProductSaveAfter implements ObserverInterface
         protected LinkInterfaceFactory $linkInterfaceFactory,
         protected LoggerInterface $logger,
         protected OptionInterfaceFactory $optionInterfaceFactory,
-        protected SaveAction $saveAction
+        protected SaveAction $saveAction,
+        protected ProductFactory $productFactory
     ) {
     }
 
@@ -57,11 +59,9 @@ class ProductSaveAfter implements ObserverInterface
         if (!empty($compatibleProducts)) {
             $compatibleProducts = $this->serializer->unserialize($compatibleProducts);
             
-            echo '<pre>';print_r($compatibleProducts);
-            
             if (isset($compatibleProducts['dynamic_row'])) {
 
-                $newBundleData = [];
+                $newBundleData = []; $createNewOption = 0;
 
                 foreach ($compatibleProducts['dynamic_row'] as $bundle) {
                     $bundleProductId = $bundle['bundle_product'];
@@ -69,7 +69,6 @@ class ProductSaveAfter implements ObserverInterface
 
                     $linkData = [];
                     if(!$bundleOptionId){ 
-                        echo 'option id not available at '. $bundle['record_id'];
                         $linkData = [
                             'product_id' => $simpleProduct->getId(), 
                             'sku' => $simpleProduct->getSku(), 
@@ -81,28 +80,23 @@ class ProductSaveAfter implements ObserverInterface
 
                         $bundle['bundle_option'] = $bundleOptionId;
                         $bundle['new_bundle_option'] = '';
+                        $createNewOption++;
+                    }else{
+                        $this->assignProductToBundle($bundleProductId, $simpleProductSku, $bundleOptionId);
                     }
-                    
 
                     $newBundleData[] = $bundle;
-
-                    //$this->assignProductToBundle($bundleProductId, $simpleProductSku, $bundleOptionId);
-                    
                 }
 
-
-                $objectManager = \Magento\Framework\App\ObjectManager::getInstance(); // instance of object manager
-                $productModel = $objectManager->create(\Magento\Catalog\Model\Product::class)->load($simpleProduct->getId());
+                //reset the compatible with if new options created in bundle and assigned prodcuts in it.
+                if($createNewOption > 0) {
+                    $productModel = $this->productFactory->create()->load($simpleProduct->getId());
+                    $compatibleProducts['dynamic_row'] = $newBundleData;
+                    $compatible_with = $this->serializer->serialize($compatibleProducts);
+                    $simpleProduct->setData('compatible_with', $compatible_with);
+                    $productModel->addAttributeUpdate('compatible_with', $compatible_with, $simpleProduct->getStoreId());
+                }
                 
-                $compatibleProducts['dynamic_row'] = $newBundleData;
-                //print_r($compatibleProducts);die;
-                $compatible_with = $this->serializer->serialize($compatibleProducts);
-
-                //$simpleProduct->setCompatibleWith($compatible_with);
-
-                $simpleProduct->setData('compatible_with', $compatible_with);
-
-                $productModel->addAttributeUpdate('compatible_with', $compatible_with, $simpleProduct->getStoreId());
             }
         }
     }
@@ -154,145 +148,14 @@ class ProductSaveAfter implements ObserverInterface
                 return;
             }
            
-            
-            // Get current selections for the bundle options
-            //$existingSelections = $bundleProduct->getExtensionAttributes()->getBundleProductOptions() ?? [];
-            if($bundleOptionId) {
-                echo '<br>bundleOptionId '. $bundleOptionId; 
-                //$this->assignProductToBundle($bundleProductId, $simpleProductSku, $bundleOptionId);
-                //return $this;
-            }
-            
-            echo '<pre>DDDDDsXXXXXXXXXXXXXXXXXXXXXXXX';
-            echo '<br>bundleOptionId '. $bundleOptionId;
-            print_r($bundle);
             $newBundleOptionTitle = $bundle['new_bundle_option'];
-            echo $newBundleOptionTitle;
-            echo $simpleProductSku;
-            $objectManager = \Magento\Framework\App\ObjectManager::getInstance(); // instance of object manager
-            //die;
-            // Create link data for the simple product
-            //$linkData = $this->getLinkData($simpleProductSku);
 
-            print_r($linkData);
-            $links = [];
-            $link = $this->linkInterfaceFactory->create();
-            $link->setData($linkData);
-            //$link->setSku($simpleProduct->getSku());
-            $link->setQty(1);  // Set quantity
-            $link->setPosition(1);  // Set position
-            $link->setIsDefault(false);  // Default selection or not
-            $link->setCanChangeQuantity(true);
-            $links[] = $link;
-
-            $optionRepository = $objectManager->create(\Magento\Bundle\Model\Option\SaveAction::class);
-
-            $bundleOption = $this->optionInterfaceFactory->create();
-
-            $bundleOption->setTitle($newBundleOptionTitle);
-            $bundleOption->setType('select');
-            $bundleOption->setRequired(true);
-            $bundleOption->setPosition(1);
-            $bundleOption->setParentId($bundleProductId);
-            $bundleOption->setStoreId($bundleProduct->getStoreId());
-            $bundleOption->setProductLinks($links);
-
-            print_r( $bundleOption);
-            $savedBundleOption = $optionRepository->save($bundleProduct, $bundleOption);
-
-            //print_r($savedBundleOption);
-            //$this->productLinkManagement->addChildByProductSku($bundleProductId, $bundleOptionId, $link);
+            $bundleOption = $this->createNewBundleOption($bundleProduct, $simpleProductSku, $newBundleOptionTitle);
             
+            $savedBundleOption = $this->saveAction->save($bundleProduct, $bundleOption);
+
             return $savedBundleOption->getId();
-            //$option = $this->optionInterfaceFactory->create();
-
             
-            //$optionFactory = $objectManager->create(\Magento\Bundle\Model\OptionFactory::class);
-            
-            //$option->setOptionId(null);
-            //$bundleOption->setProductLinks($links);
-
-            //$bundleOption->save();
-
-            
-            //die;
-            echo $bundleOptionId = $bundleOption->getId();
-
-            // 🔹 Step 4: Assign Option to Bundle Product
-            $resourceModel = $objectManager->get(\Magento\Framework\App\ResourceConnection::class);
-            $connection = $resourceModel->getConnection();
-            $tableName = $resourceModel->getTableName('catalog_product_bundle_option');
-            $connection->update(
-                $tableName,
-                ['parent_id' => $bundleProduct->getId()], // Assign option to bundle product
-                ['option_id = ?' => $bundleOptionId]
-            );
-
-            
-            die;
-
-            $selectionFactory = $objectManager->create(\Magento\Bundle\Model\SelectionFactory::class);
-
-            // 🔹 Step 3: Assign Simple Products to the Bundle Option
-            $simpleProductSkus = [$linkData['sku']]; // Replace with valid SKUs
-            $selectionData = [];
-
-            foreach ($simpleProductSkus as $sku) {
-                $simpleProduct = $productRepository->get($sku);
-                $selection = $selectionFactory->create();
-                $selection->setOptionId($optionId);
-                $selection->setProductId($simpleProduct->getId());
-                $selection->setSelectionPriceValue(0); // Keep 0 for dynamic pricing
-                $selection->setSelectionPriceType(0);
-                $selection->setIsDefault(0);
-                $selection->setSelectionQty(1);
-                $selection->setSelectionCanChangeQty(1);
-                $selection->save();
-                $selectionData[] = $selection->getId();
-                echo "Added Simple Product: {$sku} (ID: {$simpleProduct->getId()}) to Bundle Option\n";
-            }
-
-            // 🔹 Step 4: Assign Option to Bundle Product
-            
-            $connection = $resourceModel->getConnection();
-            $tableName = $resourceModel->getTableName('catalog_product_bundle_option');
-            $connection->update(
-                $tableName,
-                ['parent_id' => $bundleProduct->getId()], // Assign option to bundle product
-                ['option_id = ?' => $optionId]
-            );
-            
-
-            
-            //echo $simpleProductSku.'---';
-            $simpleProduct = $this->productRepository->get($linkData['sku']);
-            
-
-            
-            //$option->setProductLinks($links);
-            //$options[] = $option;
-
-            //print_r($options);die;
-
-           
-            // Add child product to the bundle option
-            //$this->productLinkManagement->addChildByProductSku($bundleProductId, $bundleOptionId, $link);
-
-            // $extension = $bundleProduct->getExtensionAttributes();
-            // $extension->setBundleProductOptions($options);
-            // $bundleProduct->setExtensionAttributes($extension);
-            // $bundleProduct->save();
-            //  $objectManager = \Magento\Framework\App\ObjectManager::getInstance(); // instance of object manager
-            
-            // $this->productLinkManagement->addChild($bundleProduct, $optionId, $link);
-
-            // $resourceModel = $objectManager->get(\Magento\Framework\App\ResourceConnection::class);
-
-            
-            
-            die;
-            return "Product successfully added!";
-           
         } catch (LocalizedException $e) {
             echo $e->getMessage();die;
             $this->logger->debug($e->getMessage());
@@ -300,15 +163,35 @@ class ProductSaveAfter implements ObserverInterface
     }
 
     public function getLinkData($simpleProductSku) {
-        $simpleProduct = $this->productRepository->get($simpleProductSku);
-        $linkData = [
-            'product_id' => $simpleProduct->getId(), 
-            'sku' => $simpleProduct->getSku(), 
-            'selection_qty' => 1, 
-            'selection_can_change_qty' => 1, 
-            'delete' => ''
-        ];
 
-        return $linkData;
+        $simpleProduct = $this->productRepository->get($simpleProductSku);
+
+        $link = $this->linkInterfaceFactory->create();
+        $link->setProductId($simpleProduct->getId());
+        $link->setSku($simpleProduct->getSku());
+        $link->setQty(1);  // Set quantity
+        $link->setPosition(1);  // Set position
+        $link->setIsDefault(true);  // Default selection or not
+        $link->setCanChangeQuantity(true);
+
+        return $link;
+    }
+
+    public function createNewBundleOption($bundleProduct, $simpleProductSku, $newBundleOptionTitle) {
+
+        // Create link data for the simple product
+        $links[] = $this->getLinkData($simpleProductSku);
+
+        $bundleOption = $this->optionInterfaceFactory->create();
+
+        $bundleOption->setTitle($newBundleOptionTitle);
+        $bundleOption->setType('select');
+        $bundleOption->setRequired(true);
+        $bundleOption->setPosition(1);
+        $bundleOption->setParentId($bundleProduct->getId());
+        $bundleOption->setStoreId($bundleProduct->getStoreId());
+        $bundleOption->setProductLinks($links);
+
+        return $bundleOption;
     }
 }
