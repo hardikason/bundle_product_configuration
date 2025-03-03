@@ -138,7 +138,7 @@
     <fieldset sortOrder="60" name="compatible_with">
         <settings>
             <label>Assign Product to Bundles</label>
-            <collapsible>true</collapsible>
+            <collapsible>false</collapsible>
             <dataScope>data.product.compatible_with</dataScope>
         </settings>
 

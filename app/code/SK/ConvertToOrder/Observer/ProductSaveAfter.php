@@ -157,7 +157,6 @@ class ProductSaveAfter implements ObserverInterface
             return $savedBundleOption->getId();
             
         } catch (LocalizedException $e) {
-            echo $e->getMessage();die;
             $this->logger->debug($e->getMessage());
         }
     }
