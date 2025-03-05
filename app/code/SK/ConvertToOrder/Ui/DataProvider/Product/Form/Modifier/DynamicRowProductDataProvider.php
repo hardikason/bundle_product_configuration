@@ -69,7 +69,8 @@ class DynamicRowProductDataProvider extends ProductDataProvider
                 $data[$productId]['product']['compatible_with'] = $decodedData ?? [];
             }
         }
-        
+        // echo '<pre>';
+        // print_r($data[$productId]['product']['compatible_with']);die;
         return $data;
     }
 }

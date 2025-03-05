@@ -61,11 +61,23 @@ class ProductSaveAfter implements ObserverInterface
             
             if (isset($compatibleProducts['dynamic_row'])) {
 
-                $newBundleData = []; $createNewOption = 0;
+                $newBundleData = []; $createNewOption = 0; $removeBundleRecordIds = [];
 
                 foreach ($compatibleProducts['dynamic_row'] as $bundle) {
-                    $bundleProductId = $bundle['bundle_product'];
+                    //echo 'fff'.$bundle['delete'];die;
+
+                    $bundleProductSku = $bundle['bundle_product'];
                     $bundleOptionId = isset($bundle['bundle_option']) ? $bundle['bundle_option'] : '';
+
+                    if($bundle['delete'] == 1) {
+                        echo 'delete';
+                        $this->removeProductFromBundle($bundleProductSku, $bundleOptionId, $simpleProductSku);
+                        $removeBundleRecordIds[] = $bundle['record_id'];
+                        continue; 
+                    }
+
+                    echo 'after continue';
+                    
 
                     $linkData = [];
                     if(!$bundleOptionId){ 
@@ -74,7 +86,7 @@ class ProductSaveAfter implements ObserverInterface
                             'sku' => $simpleProduct->getSku(), 
                             'selection_qty' => 1, 
                             'selection_can_change_qty' => 1, 
-                            'delete' => ''
+                            'delete' => 0
                         ];
                         $bundleOptionId = $this->createNewBundleOptionAndAssign($bundle, $simpleProductSku, $linkData);
 
@@ -82,14 +94,32 @@ class ProductSaveAfter implements ObserverInterface
                         $bundle['new_bundle_option'] = '';
                         $createNewOption++;
                     }else{
-                        $this->assignProductToBundle($bundleProductId, $simpleProductSku, $bundleOptionId);
+                        $this->assignProductToBundle($bundleProductSku, $simpleProductSku, $bundleOptionId);
                     }
 
                     $newBundleData[] = $bundle;
                 }
 
+
+                print_r($newBundleData);
+
+                print_r($removeBundleRecordIds);
+
+
+                
+
+                
+
+                //die;
                 //reset the compatible with if new options created in bundle and assigned prodcuts in it.
-                if($createNewOption > 0) {
+                if($createNewOption > 0 || count($removeBundleRecordIds) > 0) {
+
+                    $newBundleData = array_filter($newBundleData, function ($item) use ($removeBundleRecordIds) {
+                        return !in_array($item['record_id'], $removeBundleRecordIds);
+                    });
+    
+                    //print_r($newBundleData);die;
+
                     $productModel = $this->productFactory->create()->load($simpleProduct->getId());
                     $compatibleProducts['dynamic_row'] = $newBundleData;
                     $compatible_with = $this->serializer->serialize($compatibleProducts);
@@ -104,21 +134,21 @@ class ProductSaveAfter implements ObserverInterface
     /**
      * Assign product to a bundle option
      *
-     * @param int $bundleProductId
+     * @param int $bundleProductSku
      * @param int $simpleProductSku
      * @param string $bundleOptionId
      */
-    protected function assignProductToBundle($bundleProductId, $simpleProductSku, $bundleOptionId)
+    protected function assignProductToBundle($bundleProductSku, $simpleProductSku, $bundleOptionId)
     {
         try {
-            $bundleProduct = $this->productRepository->get($bundleProductId);
+            $bundleProduct = $this->productRepository->get($bundleProductSku);
 
             if (!$bundleProduct->getId() || $bundleProduct->getTypeId() !== 'bundle') {
                 return;
             }
 
             // Get current selections for the bundle options
-            $existingSelections = $bundleProduct->getExtensionAttributes()->getBundleProductOptions() ?? [];
+            //$existingSelections = $bundleProduct->getExtensionAttributes()->getBundleProductOptions() ?? [];
 
             // Create link data for the simple product
             $link = $this->linkInterfaceFactory->create();
@@ -128,7 +158,7 @@ class ProductSaveAfter implements ObserverInterface
             $link->setIsDefault(false);  // Default selection or not
             $link->setCanChangeQuantity(true);
             // Add child product to the bundle option
-            $this->productLinkManagement->addChildByProductSku($bundleProductId, $bundleOptionId, $link);
+            $this->productLinkManagement->addChildByProductSku($bundleProductSku, $bundleOptionId, $link);
 
             return "Product successfully added!";
            
@@ -192,5 +222,9 @@ class ProductSaveAfter implements ObserverInterface
         $bundleOption->setProductLinks($links);
 
         return $bundleOption;
+    }
+
+    public function removeProductFromBundle($bundleProductSku, $optionId, $simpleProductSku) {
+        $this->productLinkManagement->removeChild($bundleProductSku, $optionId, $simpleProductSku);
     }
 }

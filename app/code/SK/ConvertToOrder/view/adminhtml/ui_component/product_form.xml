@@ -218,22 +218,25 @@
                 <field name="delete" formElement="checkbox">
                     <settings>
                         <label translate="true">Delete</label>
+                        <dataType>boolean</dataType>
                         <tooltip>
                             <description translate="true">This is my checkbox's description</description>
                         </tooltip>
+                        <dataScope>delete</dataScope>
                     </settings>
                     <formElements>
                         <checkbox>
                             <settings>
-                                <prefer>checkbox</prefer>
+                                <prefer>toggle</prefer>
                                 <valueMap>
-                                    <map name="0" xsi:type="boolean">0</map>
-                                    <map name="1" xsi:type="boolean">1</map>
+                                    <map name="false" xsi:type="boolean">0</map>
+                                    <map name="true" xsi:type="boolean">1</map>
                                 </valueMap>
                             </settings>
                         </checkbox>
                     </formElements>
                 </field>
+                
             </container>
         </dynamicRows>
     </fieldset>

@@ -40,13 +40,11 @@ class SaveDynamicRowValues implements ObserverInterface
 
         $product = $observer->getProduct();
         echo '<pre>--------New  bundle_into-------';
-        print_r($product['bundle_into']);
+        print_r($product['compatible_with']);
 
         // Get old values (before update)
         $originalProductData = $product->getOrigData();
-        $origionalBundleInto = explode(',', $originalProductData['bundle_into']?:'');
-        print_r($origionalBundleInto);
-
+        
         if (!$product->getId() || $product->getTypeId() != 'simple') {
             return;
         }
@@ -75,23 +73,12 @@ class SaveDynamicRowValues implements ObserverInterface
             
             $filteredCompatibleWithData['dynamic_row'] = $this->filterCompatibleWithData($newBundleCompatibleWith);
 
-            $currentBundleInto = $product['bundle_into'];
-            $origionalBundleInto = explode(',', $originalProductData['bundle_into']?:'');
+            $currentBundleInto = explode(',', isset($product['bundle_into'])?$product['bundle_into']:'');
+            $origionalBundleInto = explode(',', isset($originalProductData['bundle_into'])?$originalProductData['bundle_into']:'');
             //print_r($origionalBundleInto);
 
             $finalCompatibleWithResultData = $this->getRemovedItems($filteredCompatibleWithData, $currentBundleInto, $origionalBundleInto);
             //print_r($finalCompatibleWithResultData);die;
-            // Compare the arrays
-            // $differences = $this->getRemovedItems($compatible_with);
-
-            // // Print results
-            // echo '<pre>--------Final Array-------';
-            // print_r($differences);
-
-            // Print the filtered array
-            // echo "<pre>";
-            // print_r($filteredCompatibleWithData);
-            // echo "</pre>";
             
             if (is_array($finalCompatibleWithResultData)) {
                 $product->setCompatibleWith($this->serializer->serialize($finalCompatibleWithResultData));
@@ -136,7 +123,7 @@ class SaveDynamicRowValues implements ObserverInterface
                             'bundle_product' => $bundleProduct->getSku(),
                             'bundle_option' => $bundleOption['option_id'],
                             'initialize' => 'true',
-                            'delete' => 'false'
+                            'delete' => 0
                         ];
                     }
                 }
@@ -160,7 +147,7 @@ class SaveDynamicRowValues implements ObserverInterface
 
             return $bundleProducts;
 
-        } catch(Magento\Framework\Exception\LocalizedException $e) {
+        } catch(\Magento\Framework\Exception\LocalizedException $e) {
             echo $e->getMessage();die;
         }
 
@@ -188,32 +175,40 @@ class SaveDynamicRowValues implements ObserverInterface
      * Recursively finds differences between two multidimensional arrays
      */
     public function getRemovedItems($compatible_with, $currentBundleInto, $origionalBundleInto) {
-        $removed = [];
-
-        $missingInArray2 = array_diff($origionalBundleInto, $currentBundleInto); // Items in array1 but not in array2
-        $missingInArray1 = array_diff($currentBundleInto, $origionalBundleInto); // Items in array2 but not in array1
-
-        $result = [
-            'removed' => $missingInArray2,
-            'added' => $missingInArray1
-        ];
-
+        
         $removeBundleFromCW = [];
-        if(count($result['removed']) > 0) {
-            $removedBundleProducts = $this->getBundleProducts($result['removed']);
+        if(!empty($origionalBundleInto) || !empty($currentBundleInto)) {
+            $missingInArray2 = array_diff($origionalBundleInto, $currentBundleInto); // Items in array1 but not in array2
+            $missingInArray1 = array_diff($currentBundleInto, $origionalBundleInto); // Items in array2 but not in array1
 
-            foreach ($removedBundleProducts as $removedBundleProduct) {
-                $removeBundleFromCW[] = $removedBundleProduct->getSku();
+            $result = [
+                'removed' => $missingInArray2,
+                'added' => $missingInArray1
+            ];
+
+            echo "<pre>removed";
+            
+            if(count($result['removed']) > 0) {
+                $removedBundleProducts = $this->getBundleProducts($result['removed']);
+
+                foreach ($removedBundleProducts as $removedBundleProduct) {
+                    $removeBundleFromCW[] = $removedBundleProduct->getSku();
+                }
             }
         }
+
+        // Print the filtered array
+        echo "<pre>removed";
+        print_r($removeBundleFromCW);
+        echo "</pre>";
         
         // Convert `dynamic_row` array to key-based for easy comparison
         $updatedArray = [];
         foreach ($compatible_with['dynamic_row'] as $key => $row) {
 
-            if($row['delete'] === 'true' || in_array($row['bundle_product'], $removeBundleFromCW)) {
+            if($row['delete'] === true || in_array($row['bundle_product'], $removeBundleFromCW)) {
                 
-                $row['delete'] = 'true';
+                $row['delete'] = true;
                 
             }
             $updatedArray[] = $row;
