@@ -1,16 +1,14 @@
 define([
-    'uiComponent',
-    'ko',
     'jquery',
-    'mage/url'
-], function (Component, ko, $, urlBuilder) {
+    'Magento_Ui/js/form/element/select'
+], function ($, Select) {
     'use strict';
 
-    return Component.extend({
+    return Select.extend({
         defaults: {
             customProperty: '${ $.parent }',
             listens: {
-                'bundle_option': 'toggleUseDefault'
+                'value': 'toggleUseDefault'
             }
         },
 

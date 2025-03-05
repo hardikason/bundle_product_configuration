@@ -18,7 +18,7 @@ class ProductTypes extends AbstractSource
         return [
             ['value' => '', 'label' => __(' -- Select --')],
             ['value' => 'cpu', 'label' => __('CPU')],
-            ['value' => 'chasis', 'label' => __('CHASIS')],
+            ['value' => 'chassis', 'label' => __('CHASSIS')],
             ['value' => 'heatsink', 'label' => __('heatsink')],
             ['value' => 'ZZZZZ', 'label' => __('ZZZZZ')]
 

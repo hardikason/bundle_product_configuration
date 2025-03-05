@@ -174,6 +174,9 @@
                                 <item name="required-entry" xsi:type="boolean">true</item>
                             </item>
                             <item name="component" xsi:type="string">SK_ConvertToOrder/js/form/element/dr-bundle-product</item>
+                            <item name="listen" xsi:type="array">
+                                <item name="bundle_product" xsi:type="string">onBundleProductChange</item>
+                            </item>
                         </item>
                     </argument>
                     <formElements>
@@ -187,14 +190,17 @@
                 <field name="bundle_option" sortOrder="20" formElement="select">
                     <argument name="data" xsi:type="array">
                         <item name="config" xsi:type="array">
-                            <item name="component" xsi:type="string">SK_ConvertToOrder/js/form/element/dr-bundle-option</item>
+                            <item name="component" xsi:type="string">SK_ConvertToOrder/js/form/element/dr-bundle-product</item>
                             <item name="dataScope" xsi:type="string">bundle_option</item>
                             <item name="label" xsi:type="string" translate="true">Bundle Option</item>
                             <item name="dataType" xsi:type="string">text</item>
                             <item name="componentType" xsi:type="string">field</item>
-                            <item name="default" xsi:type="string">$parent.bundle_product:value</item>
+                            <!-- <item name="default" xsi:type="string">$parent.bundle_product:value</item> -->
                             <!-- <item name="validation" xsi:type="array">
                                 <item name="required-entry" xsi:type="boolean">true</item>
+                            </item> -->
+                            <!-- <item name="listen" xsi:type="array">
+                                <item name="bundle_option" xsi:type="string">onBundleOptionChange</item>
                             </item> -->
                         </item>
                     </argument>
@@ -209,20 +215,25 @@
                         </item>
                     </argument>
                 </field>
-                <actionDelete>
-                    <argument name="data" xsi:type="array">
-                        <item name="config" xsi:type="array">
-                            <item name="componentType" xsi:type="string">actionDelete</item>
-                            <item name="dataType" xsi:type="string">text</item>
-                            <item name="fit" xsi:type="boolean">false</item>
-                            <item name="label" xsi:type="string">Actions</item>
-                            <item name="sortOrder" xsi:type="string">60</item>
-                            <item name="additionalClasses" xsi:type="string">data-grid-actions-cell</item>
-                            <item name="template" xsi:type="string">Magento_Backend/dynamic-rows/cells/action-delete
-                            </item>
-                        </item>
-                    </argument>
-                </actionDelete>
+                <field name="delete" formElement="checkbox">
+                    <settings>
+                        <label translate="true">Delete</label>
+                        <tooltip>
+                            <description translate="true">This is my checkbox's description</description>
+                        </tooltip>
+                    </settings>
+                    <formElements>
+                        <checkbox>
+                            <settings>
+                                <prefer>checkbox</prefer>
+                                <valueMap>
+                                    <map name="0" xsi:type="boolean">0</map>
+                                    <map name="1" xsi:type="boolean">1</map>
+                                </valueMap>
+                            </settings>
+                        </checkbox>
+                    </formElements>
+                </field>
             </container>
         </dynamicRows>
     </fieldset>
