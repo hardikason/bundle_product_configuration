@@ -13,6 +13,7 @@ use Psr\Log\LoggerInterface;
 use Magento\Bundle\Api\Data\OptionInterfaceFactory;
 use Magento\Bundle\Model\Option\SaveAction;
 use Magento\Catalog\Model\ProductFactory;
+use Magento\Catalog\Model\Product\Type;
 
 class ProductSaveAfter implements ObserverInterface
 {
@@ -49,84 +50,79 @@ class ProductSaveAfter implements ObserverInterface
         $simpleProduct = $observer->getEvent()->getProduct();
         $simpleProductSku = $simpleProduct->getSku();
 
-        // Get compatible products from request data
-        $compatibleProducts = $simpleProduct->getCompatibleWith();
-
-        if (!$simpleProduct->getId() || $simpleProduct->getTypeId() != 'simple') {
-            return;
+        if ($simpleProduct->getTypeId() == Type::TYPE_BUNDLE) {
+            print_r($simpleProduct->getData('bundle_removed_items'));
+            die;
         }
 
-        if (!empty($compatibleProducts)) {
-            $compatibleProducts = $this->serializer->unserialize($compatibleProducts);
-            
-            if (isset($compatibleProducts['dynamic_row'])) {
+        if ($simpleProduct->getTypeId() == Type::TYPE_SIMPLE) {
+           // Get compatible products from request data
+            $compatibleProducts = $simpleProduct->getCompatibleWith();
+            if (!empty($compatibleProducts)) {
+                $compatibleProducts = $this->serializer->unserialize($compatibleProducts);
+                
+                if (isset($compatibleProducts['dynamic_row'])) {
 
-                $newBundleData = []; $createNewOption = 0; $removeBundleRecordIds = [];
+                    $newBundleData = []; $createNewOption = 0; $removeBundleRecordIds = [];
 
-                foreach ($compatibleProducts['dynamic_row'] as $bundle) {
-                    //echo 'fff'.$bundle['delete'];die;
+                    foreach ($compatibleProducts['dynamic_row'] as $bundle) {
+                        //echo 'fff'.$bundle['delete'];die;
 
-                    $bundleProductSku = $bundle['bundle_product'];
-                    $bundleOptionId = isset($bundle['bundle_option']) ? $bundle['bundle_option'] : '';
+                        $bundleProductSku = $bundle['bundle_product'];
+                        $bundleOptionId = isset($bundle['bundle_option']) ? $bundle['bundle_option'] : '';
 
-                    if($bundle['delete'] == 1) {
-                        echo 'delete';
-                        $this->removeProductFromBundle($bundleProductSku, $bundleOptionId, $simpleProductSku);
-                        $removeBundleRecordIds[] = $bundle['record_id'];
-                        continue; 
+                        if($bundle['delete'] == 1) {
+                            echo 'delete';
+                            $this->removeProductFromBundle($bundleProductSku, $bundleOptionId, $simpleProductSku);
+                            $removeBundleRecordIds[] = $bundle['record_id'];
+                            continue; 
+                        }
+
+                        echo 'after continue';
+                        
+
+                        $linkData = [];
+                        if(!$bundleOptionId){ 
+                            $linkData = [
+                                'product_id' => $simpleProduct->getId(), 
+                                'sku' => $simpleProduct->getSku(), 
+                                'selection_qty' => 1, 
+                                'selection_can_change_qty' => 1, 
+                                'delete' => 0
+                            ];
+                            $bundleOptionId = $this->createNewBundleOptionAndAssign($bundle, $simpleProductSku, $linkData);
+
+                            $bundle['bundle_option'] = $bundleOptionId;
+                            $bundle['new_bundle_option'] = '';
+                            $createNewOption++;
+                        }else{
+                            $this->assignProductToBundle($bundleProductSku, $simpleProductSku, $bundleOptionId);
+                        }
+
+                        $newBundleData[] = $bundle;
                     }
 
-                    echo 'after continue';
+                    print_r($newBundleData);
+
+                    print_r($removeBundleRecordIds);
+
+                    //reset the compatible with if new options created in bundle and assigned prodcuts in it.
+                    if($createNewOption > 0 || count($removeBundleRecordIds) > 0) {
+
+                        $newBundleData = array_filter($newBundleData, function ($item) use ($removeBundleRecordIds) {
+                            return !in_array($item['record_id'], $removeBundleRecordIds);
+                        });
+        
+                        //print_r($newBundleData);die;
+
+                        $productModel = $this->productFactory->create()->load($simpleProduct->getId());
+                        $compatibleProducts['dynamic_row'] = $newBundleData;
+                        $compatible_with = $this->serializer->serialize($compatibleProducts);
+                        $simpleProduct->setData('compatible_with', $compatible_with);
+                        $productModel->addAttributeUpdate('compatible_with', $compatible_with, $simpleProduct->getStoreId());
+                    }
                     
-
-                    $linkData = [];
-                    if(!$bundleOptionId){ 
-                        $linkData = [
-                            'product_id' => $simpleProduct->getId(), 
-                            'sku' => $simpleProduct->getSku(), 
-                            'selection_qty' => 1, 
-                            'selection_can_change_qty' => 1, 
-                            'delete' => 0
-                        ];
-                        $bundleOptionId = $this->createNewBundleOptionAndAssign($bundle, $simpleProductSku, $linkData);
-
-                        $bundle['bundle_option'] = $bundleOptionId;
-                        $bundle['new_bundle_option'] = '';
-                        $createNewOption++;
-                    }else{
-                        $this->assignProductToBundle($bundleProductSku, $simpleProductSku, $bundleOptionId);
-                    }
-
-                    $newBundleData[] = $bundle;
                 }
-
-
-                print_r($newBundleData);
-
-                print_r($removeBundleRecordIds);
-
-
-                
-
-                
-
-                //die;
-                //reset the compatible with if new options created in bundle and assigned prodcuts in it.
-                if($createNewOption > 0 || count($removeBundleRecordIds) > 0) {
-
-                    $newBundleData = array_filter($newBundleData, function ($item) use ($removeBundleRecordIds) {
-                        return !in_array($item['record_id'], $removeBundleRecordIds);
-                    });
-    
-                    //print_r($newBundleData);die;
-
-                    $productModel = $this->productFactory->create()->load($simpleProduct->getId());
-                    $compatibleProducts['dynamic_row'] = $newBundleData;
-                    $compatible_with = $this->serializer->serialize($compatibleProducts);
-                    $simpleProduct->setData('compatible_with', $compatible_with);
-                    $productModel->addAttributeUpdate('compatible_with', $compatible_with, $simpleProduct->getStoreId());
-                }
-                
             }
         }
     }

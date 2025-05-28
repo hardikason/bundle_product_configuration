@@ -1,8 +1,13 @@
 <?xml version="1.0"?>
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
-    <type name="Magento\Catalog\Ui\DataProvider\Product\Form\ProductDataProvider">
+    <!-- <type name="Magento\Catalog\Ui\DataProvider\Product\Form\ProductDataProvider">
         <arguments>
             <argument name="dynamicRowModifier" xsi:type="object">SK\ConvertToOrder\Ui\DataProvider\Product\Form\Modifier\DynamicRowProductDataProvider</argument>
+        </arguments>
+    </type> -->
+    <type name="Magento\Catalog\Ui\DataProvider\Product\Form\ProductDataProvider">
+        <arguments>
+            <argument name="authentication_photo" xsi:type="object">SK\ProductCOA\Ui\DataProvider\Product\Form\Modifier\AuthenticationPhoto</argument>
         </arguments>
     </type>
 </config>

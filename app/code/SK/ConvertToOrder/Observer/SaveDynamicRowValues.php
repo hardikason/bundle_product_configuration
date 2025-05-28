@@ -35,69 +35,98 @@ class SaveDynamicRowValues implements ObserverInterface
     public function execute(Observer $observer)
     {
         
-        //$product = $observer->getEvent()->getDataObject();
-        //$wholeRequest = $this->request->getPost();
-
         $product = $observer->getProduct();
-        echo '<pre>--------New  bundle_into-------';
-        print_r($product['compatible_with']);
-
         // Get old values (before update)
         $originalProductData = $product->getOrigData();
-        
-        if (!$product->getId() || $product->getTypeId() != 'simple') {
-            return;
-        }
-        
-        // if (empty($post)) {
-        //     $post = !empty($wholeRequest['variables']['product']) ? $wholeRequest['variables']['product'] : [];
-        // }
-
-        //compatible with
-        $compatible_with = isset(
-            $product['compatible_with']
-        ) ? $product['compatible_with'] : [];
 
         
-        
+        echo '<pre>--------New  Product Data -------';
+       
 
-
-        if(!empty($compatible_with) || $product['bundle_into'] != null) {
+        // For simple product save
+        if ($product->getTypeId() == Type::TYPE_SIMPLE) {
             
-            $newBundleCompatibleWith = $this->getBundleProductsFromBundleIntoField($product);
-            print_r($newBundleCompatibleWith);
-            //die;
-            if(isset($product['compatible_with']['dynamic_row'])) {
-                $newBundleCompatibleWith = array_merge($product['compatible_with']['dynamic_row'], $newBundleCompatibleWith);
+        
+        
+            //compatible with
+            $compatible_with = isset(
+                $product['compatible_with']
+            ) ? $product['compatible_with'] : [];
+
+            if(!empty($compatible_with) || $product['bundle_into'] != null) {
+                
+                $newBundleCompatibleWith = $this->getBundleProductsFromBundleIntoField($product);
+                if(isset($product['compatible_with']['dynamic_row'])) {
+                    $newBundleCompatibleWith = array_merge($product['compatible_with']['dynamic_row'], $newBundleCompatibleWith);
+                }
+                
+                $filteredCompatibleWithData['dynamic_row'] = $this->filterCompatibleWithData($newBundleCompatibleWith);
+
+                $currentBundleInto = explode(',', isset($product['bundle_into'])?$product['bundle_into']:'');
+                $origionalBundleInto = explode(',', isset($originalProductData['bundle_into'])?$originalProductData['bundle_into']:'');
+            
+                $finalCompatibleWithResultData = $this->getRemovedItems($filteredCompatibleWithData, $currentBundleInto, $origionalBundleInto);
+                //print_r($finalCompatibleWithResultData);die;
+                
+                if (is_array($finalCompatibleWithResultData)) {
+                    $product->setCompatibleWith($this->serializer->serialize($finalCompatibleWithResultData));
+                }
+
             }
             
-            $filteredCompatibleWithData['dynamic_row'] = $this->filterCompatibleWithData($newBundleCompatibleWith);
-
-            $currentBundleInto = explode(',', isset($product['bundle_into'])?$product['bundle_into']:'');
-            $origionalBundleInto = explode(',', isset($originalProductData['bundle_into'])?$originalProductData['bundle_into']:'');
-            //print_r($origionalBundleInto);
-
-            $finalCompatibleWithResultData = $this->getRemovedItems($filteredCompatibleWithData, $currentBundleInto, $origionalBundleInto);
-            //print_r($finalCompatibleWithResultData);die;
             
-            if (is_array($finalCompatibleWithResultData)) {
-                $product->setCompatibleWith($this->serializer->serialize($finalCompatibleWithResultData));
+            // heatsink condition
+            $heatsink_condition = isset(
+                $product['heatsink_condition']
+            ) ? $product['heatsink_condition'] : [];
+
+            if (is_array($heatsink_condition)) {
+                $product->setHeatsinkCondition($this->serializer->serialize($heatsink_condition));
+            }
+        }
+
+        // For bundle product save
+        if ($product->getTypeId() == Type::TYPE_BUNDLE) {
+            $newOptions = $product->getExtensionAttributes()->getBundleProductOptions();
+            //print_r($newOptions);
+
+            $bundlesNewOptionsSelection = [];
+            foreach($newOptions as $option) {
+                foreach($option['product_links'] as $productLinks) {
+                    $bundlesNewOptionsSelection[] = [
+                        'simple_product_sku' => $productLinks['sku'],
+                        'bundle_product' => $productLinks['parent_product_id'],
+                        'option_id' => $productLinks['option_id'],
+                        'selection_id' => $productLinks['selection_id']
+                    ];
+                }
+            }
+            print_r($bundlesNewOptionsSelection);
+            // Extract `selection_id` values
+            $newSelectionIds = array_column($bundlesNewOptionsSelection, 'selection_id');
+            
+
+            $selectionCollection = $product->getTypeInstance(true)->getSelectionsCollection(
+                $product->getTypeInstance(true)->getOptionsIds($product), $product);
+            print_r($selectionCollection->getData());
+
+            $bundlesRemovedOptionsSelection = [];
+            foreach($selectionCollection as $option)
+            {
+                if(!in_array($option['selection_id'], $newSelectionIds)) {
+                    $bundlesRemovedOptionsSelection[] = [
+                        'simple_product_sku' => $option['sku'],
+                        'bundle_product' => $option['parent_product_id'],
+                        'option_id' => $option['option_id'],
+                        'selection_id' => $option['selection_id']
+                    ];
+                }
             }
 
-        }
-        
-        
-        // if (is_array($compatible_with)) {
-        //     $product->setCompatibleWith($this->serializer->serialize($compatible_with));
-        // }
-        
-        // heatsink condition
-        $heatsink_condition = isset(
-            $product['heatsink_condition']
-        ) ? $product['heatsink_condition'] : [];
+            print_r($bundlesRemovedOptionsSelection);
 
-        if (is_array($heatsink_condition)) {
-            $product->setHeatsinkCondition($this->serializer->serialize($heatsink_condition));
+            $product->setData('bundle_removed_items', $bundlesRemovedOptionsSelection);
+
         }
     }
     

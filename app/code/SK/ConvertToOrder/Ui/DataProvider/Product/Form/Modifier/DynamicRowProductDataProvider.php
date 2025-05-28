@@ -48,8 +48,11 @@ class DynamicRowProductDataProvider extends ProductDataProvider
     public function getData()
     {
         $data = parent::getData();
+        echo '<pre>sdfsdf'; //print_r($data);die;
         $product = $this->locator->getProduct();
         $productId = $product->getId();
+
+        //print_r($product->getCustomAttribute('authentication_photo'));die;
 
         if ($productId) {
             // Fetch saved custom field data from the product
@@ -69,6 +72,21 @@ class DynamicRowProductDataProvider extends ProductDataProvider
                 $data[$productId]['product']['compatible_with'] = $decodedData ?? [];
             }
         }
+
+        $attribute = $product->getCustomAttribute('authentication_photo');
+        $value = $attribute ? $attribute->getValue() : null;
+
+        if ($value) {
+            $data[$productId]['product']['authentication_photo'] = [
+                [
+                    'name' => basename($value),
+                    'url' => '/pub/media/authentication-photo/image/' . basename($value),
+                    'type' => 'image/jpeg',
+                ]
+            ];
+        }
+
+         //echo '<pre>sdfsdf';print_r($data);die;
         // echo '<pre>';
         // print_r($data[$productId]['product']['compatible_with']);die;
         return $data;
