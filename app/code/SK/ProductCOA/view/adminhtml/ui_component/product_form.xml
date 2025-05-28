@@ -1,0 +1,69 @@
+<?xml version="1.0"?>
+<form xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Ui:etc/ui_configuration.xsd">
+    <fieldset name="authentication-photo">
+        <field name="authentication_photo">
+            <argument name="data" xsi:type="array">
+                <item name="config" xsi:type="array">
+                    <item name="dataType" xsi:type="string">string</item>
+                    <item name="dataScope" xsi:type="string">authentication_photo</item>
+                    <item name="label" xsi:type="string" translate="true">Authentication Photo</item>
+                    <item name="visible" xsi:type="boolean">true</item>
+                    <item name="formElement" xsi:type="string">fileUploader</item>
+                    <item name="componentType" xsi:type="string">fileUploader</item>
+                    <item name="component" xsi:type="string">Magento_Ui/js/form/element/file-uploader</item>
+                    <item name="elementTmpl" xsi:type="string">ui/form/element/uploader/uploader</item>
+                    <item name="previewTmpl" xsi:type="string">SK_ProductCOA/image-preview</item>
+                    <item name="required" xsi:type="boolean">false</item>
+                    <item name="sortOrder" xsi:type="number">40</item>
+                    <item name="uploaderConfig" xsi:type="array">
+                        <item name="url" xsi:type="url" path="productcoa/image/upload"/>
+                    </item>
+                    <item name="validation" xsi:type="array">
+                        <item name="max_file_size" xsi:type="number">2097152</item> 
+                        <item name="required-entry" xsi:type="boolean">false</item>
+                    </item>
+                </item>
+            </argument>
+            
+        </field>
+    </fieldset>
+    <!-- <fieldset name="authentication-photo">
+        <field name="authentication_photo">
+            <argument name="data" xsi:type="array">
+                <item name="config" xsi:type="array">
+                    <item name="dataType" xsi:type="string">string</item>
+                    <item name="formElement" xsi:type="string">imageUploader</item>
+                    <item name="componentType" xsi:type="string">field</item>
+                    <item name="dataScope" xsi:type="string">authentication_photo</item>
+                    <item name="label" xsi:type="string" translate="true">Authentication Photo</item>
+                    <item name="sortOrder" xsi:type="number">100</item>
+                   
+                    <item name="uploaderConfig" xsi:type="array">
+                        <item name="url" xsi:type="url" path="productcoa/image/upload"/>
+                    </item>
+                    <item name="previewTmpl" xsi:type="string">Magento_Catalog/image-preview</item>
+                </item>
+            </argument>
+        </field>
+    </fieldset> -->
+    <!-- <fieldset name="content">
+        <field name="authentication_photo" formElement="imageUploader">
+            <settings>
+                <notice translate="true">Some notice.</notice>
+                <label translate="true">Image Uploader Example</label>
+                <componentType>imageUploader</componentType>
+            </settings>
+            <formElements>
+                <imageUploader>
+                    <settings>
+                        <allowedExtensions>jpg jpeg gif png</allowedExtensions>
+                        <maxFileSize>2097152</maxFileSize>
+                        <uploaderConfig>
+                            <param xsi:type="string" name="url">productcoa/image/upload</param>
+                        </uploaderConfig>
+                    </settings>
+                </imageUploader>
+            </formElements>
+        </field>
+    </fieldset> -->
+</form>

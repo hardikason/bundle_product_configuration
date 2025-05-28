@@ -1,0 +1,37 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
+
+    <!-- Image Uploader -->
+    <virtualType name="VirtualTypeName" type="Magento\Catalog\Model\ImageUploader">
+        <arguments>
+            <argument name="baseTmpPath" xsi:type="string">authentication-photo/image</argument>
+            <argument name="basePath" xsi:type="string">authentication-photo/image</argument>
+            <argument name="allowedExtensions" xsi:type="array">
+                <item name="jpg" xsi:type="string">jpg</item>
+                <item name="jpeg" xsi:type="string">jpeg</item>
+                <item name="gif" xsi:type="string">gif</item>
+                <item name="png" xsi:type="string">png</item>
+            </argument>
+        </arguments>
+    </virtualType>
+    <type name="SK\ProductCOA\Controller\Adminhtml\Image\Upload">
+        <arguments>
+            <argument name="imageUploader" xsi:type="object">VirtualTypeName</argument>
+        </arguments>
+    </type>
+    <!-- End Image Uploader -->
+
+    <!-- Authentication data pass to product form -->
+    <virtualType name="Magento\Catalog\Ui\DataProvider\Product\Form\Modifier\Pool">
+        <arguments>
+            <argument name="modifiers" xsi:type="array">
+                <item name="authentication_photo_modifier" xsi:type="array">
+                    <item name="class" xsi:type="string">SK\ProductCOA\Ui\DataProvider\Product\Form\Modifier\AuthenticationPhotoDataProvider</item>
+                    <item name="sortOrder" xsi:type="number">50</item>
+                </item>
+            </argument>
+        </arguments>
+    </virtualType>
+    <!-- End Authentication data pass to product form -->
+    
+</config>

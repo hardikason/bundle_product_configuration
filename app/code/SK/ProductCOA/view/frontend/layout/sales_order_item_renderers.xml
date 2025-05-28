@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * Copyright © Magento, Inc. All rights reserved.
+ * See COPYING.txt for license details.
+ */
+-->
+<page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
+    <body>
+        <!-- <referenceBlock name="sales.order.items.renderers">
+            <block class="Magento\Sales\Block\Order\Item\Renderer\DefaultRenderer" name="sales.order.items.renderers.default" as="default" template="SK_ProductCOA::order/items/renderer/default.phtml"/>
+        </referenceBlock> -->
+
+        <referenceBlock name="sales.order.items.renderers.default">
+            <arguments>
+                <argument name="productInfoViewModel" xsi:type="object">SK\ProductCOA\ViewModel\ProductInfo</argument>
+            </arguments>
+            <action method="setTemplate">
+                <argument name="template" xsi:type="string">SK_ProductCOA::order/items/renderer/default.phtml</argument>
+            </action>
+        </referenceBlock>
+    </body>
+</page>

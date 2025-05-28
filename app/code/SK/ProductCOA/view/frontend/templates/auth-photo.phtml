@@ -1,0 +1,28 @@
+<?php 
+/** @var ProductInfo $productInfoViewModel */
+$productInfoViewModel = $block->getData('productInfoViewModel');
+$product = $productInfoViewModel->getProductData();
+
+print_r($product);die;
+//echo $this->getProductId();
+?>
+<?php
+/** @var \Magento\Catalog\Model\Product $product */
+//$product = $block->getProduct(); // or from ViewModel
+$imageUrl = $productInfoViewModel->getProductImage($product); // Helper or method returning image URL
+?>
+
+<div class="product-info-container">
+    <div class="product-info">
+        <div class="product-image">
+            <img src="<?= $imageUrl ?>" alt="<?= $block->escapeHtml($product->getName()) ?>">
+        </div>
+        <div class="product-details">
+            <h2><?= $block->escapeHtml($product->getName()) ?></h2>
+            <p class="p-desc"><?= $block->escapeHtml($product->getShortDescription()) ?></p>
+            <p class="p-price"><?= $block->escapeHtml(__('Price:'));?><?= $block->escapeHtml($product->getPriceInfo()->getPrice('final_price')->getAmount()->getValue()) ?> <?= $block->getCurrencySymbol(); ?></p>
+            <a href="<?= $product->getProductUrl() ?>"><?= $block->escapeHtml(__('View Product')) ?></a>
+        </div>
+    </div>
+</div>
+
