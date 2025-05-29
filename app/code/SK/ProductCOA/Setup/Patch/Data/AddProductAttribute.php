@@ -10,23 +10,24 @@ use Magento\Framework\Setup\Patch\DataPatchInterface;
 use Magento\Catalog\Model\Product;
 use Magento\Eav\Model\Config;
 
-//use Magento\Catalog\Model\Product\Attribute\Backend\Image;
-
 class AddProductAttribute implements DataPatchInterface
 {
-    private $eavSetupFactory;
-    private $eavConfig;
-
+    /**
+     * Constructor function
+     *
+     * @param EavSetupFactory $eavSetupFactory
+     * @param Config $eavConfig
+     */
     public function __construct(
-        EavSetupFactory $eavSetupFactory,
-        Config $eavConfig
+        protected EavSetupFactory $eavSetupFactory,
+        protected Config $eavConfig
     ) {
         $this->eavSetupFactory = $eavSetupFactory;
         $this->eavConfig = $eavConfig;
     }
 
     /**
-     * {@inheritdoc}
+     * @inheritdoc
      */
     public function apply()
     {
@@ -39,7 +40,7 @@ class AddProductAttribute implements DataPatchInterface
             [
                 'type' => 'varchar',
                 'label' => 'Authentication Photo',
-                'input' => 'text',
+                'input' => 'media_image',
                 'frontend' => \Magento\Catalog\Model\Product\Attribute\Frontend\Image::class,
                 'required' => false,
                 'sort_order' => 100,
@@ -62,18 +63,10 @@ class AddProductAttribute implements DataPatchInterface
             'authentication_photo',
             100
         );
-
-        // Optional: make attribute usable in admin forms
-        // $attribute = $this->eavConfig->getAttribute(Product::ENTITY, 'authentication_photo');
-        // $attribute->setData(
-        //     'used_in_forms',
-        //     ['adminhtml_catalog_product']
-        // );
-        // $attribute->save();
     }
 
     /**
-     * {@inheritdoc}
+     * @inheritdoc
      */
     public static function getDependencies(): array
     {
@@ -81,7 +74,7 @@ class AddProductAttribute implements DataPatchInterface
     }
 
     /**
-     * {@inheritdoc}
+     * @inheritdoc
      */
     public function getAliases(): array
     {

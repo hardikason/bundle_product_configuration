@@ -21,6 +21,8 @@ class ToOrderItemPlugin
     /**
      * Transfer authentication_photo from quote item to order item
      *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     *
      * @param ToOrderItem $subject
      * @param OrderItem $result
      * @param AbstractItem $item

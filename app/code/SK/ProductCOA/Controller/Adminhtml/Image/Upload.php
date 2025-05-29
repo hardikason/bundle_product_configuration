@@ -1,6 +1,7 @@
 <?php
 namespace SK\ProductCOA\Controller\Adminhtml\Image;
 
+use \Magento\Framework\App\Action\HttpPostActionInterface;
 use Magento\Framework\App\Filesystem\DirectoryList;
 use Magento\Framework\Controller\ResultFactory;
 use Magento\MediaStorage\Model\File\UploaderFactory;
@@ -9,7 +10,7 @@ use Magento\Store\Model\ScopeInterface;
 use Magento\Backend\App\Action\Context;
 use Magento\Framework\Filesystem;
 
-class Upload extends \Magento\Backend\App\Action
+class Upload extends \Magento\Backend\App\Action implements HttpPostActionInterface
 {
     /**
      * Authentication photo upload directory config
@@ -70,7 +71,6 @@ class Upload extends \Magento\Backend\App\Action
                 ];
             }
 
-
         } catch (\Exception $e) {
             $imageResult = ['error' => $e->getMessage(), 'errorcode' => $e->getCode()];
         }
@@ -78,17 +78,18 @@ class Upload extends \Magento\Backend\App\Action
     }
 
     /**
-     * get upload directory absolute path
+     * Get upload directory absolute path
      *
      * @return string
      */
     private function getUploadDir(): string
     {
-        return $this->filesystem->getDirectoryRead(DirectoryList::MEDIA)->getAbsolutePath() . $this->getAuthDirName() . '/';
+        return $this->filesystem
+            ->getDirectoryRead(DirectoryList::MEDIA)->getAbsolutePath() . $this->getAuthDirName() . '/';
     }
 
     /**
-     * get authentication upload photo directory
+     * Get authentication upload photo directory
      *
      * @return string|null
      */
