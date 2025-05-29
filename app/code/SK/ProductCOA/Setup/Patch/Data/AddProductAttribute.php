@@ -9,6 +9,7 @@ use Magento\Eav\Model\Entity\Attribute\ScopedAttributeInterface;
 use Magento\Framework\Setup\Patch\DataPatchInterface;
 use Magento\Catalog\Model\Product;
 use Magento\Eav\Model\Config;
+
 //use Magento\Catalog\Model\Product\Attribute\Backend\Image;
 
 class AddProductAttribute implements DataPatchInterface

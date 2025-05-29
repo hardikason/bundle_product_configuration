@@ -4,18 +4,22 @@ namespace SK\ProductCOA\Ui\DataProvider\Product\Form\Modifier;
 use Magento\Catalog\Ui\DataProvider\Product\Form\Modifier\AbstractModifier;
 use Magento\Framework\UrlInterface;
 use Magento\Catalog\Model\Locator\LocatorInterface;
+use Magento\Framework\Filesystem\Io\File as IOFile;
 
 class AuthenticationPhotoDataProvider extends AbstractModifier
 {
-    protected $urlBuilder;
-    protected $locator;
-
+    /**
+     * Constructor function
+     *
+     * @param UrlInterface $urlBuilder
+     * @param LocatorInterface $locator
+     * @param IOFile $ioFile
+     */
     public function __construct(
-        UrlInterface $urlBuilder,
-        LocatorInterface $locator
+        protected UrlInterface $urlBuilder,
+        protected LocatorInterface $locator,
+        protected IOFile $ioFile
     ) {
-        $this->urlBuilder = $urlBuilder;
-        $this->locator = $locator;
     }
 
     /**
@@ -32,12 +36,15 @@ class AuthenticationPhotoDataProvider extends AbstractModifier
 
         $attribute = $product->getCustomAttribute('authentication_photo');
         $value = $attribute ? $attribute->getValue() : null;
-
+        
         if ($value) {
+            $fileInfo = $this->ioFile->getPathInfo($value);
+            $basename = $fileInfo['basename'];
+
             $data[$productId]['product']['authentication_photo'] = [
                 [
-                    'name' => basename($value),
-                    'url' => '/pub/media/authentication-photo/image/' . basename($value),
+                    'name' => $basename,
+                    'url' => $this->getMediaUrl() . $value,
                     'type' => 'image/jpeg',
                 ]
             ];
@@ -46,11 +53,22 @@ class AuthenticationPhotoDataProvider extends AbstractModifier
         return $data;
     }
 
+    /**
+     * Modify Meta function
+     *
+     * @param array $meta
+     * @return void
+     */
     public function modifyMeta(array $meta)
     {
         return $meta;
     }
 
+    /**
+     * Get media url
+     *
+     * @return string
+     */
     protected function getMediaUrl()
     {
         return $this->urlBuilder->getBaseUrl(['_type' => UrlInterface::URL_TYPE_MEDIA]);

@@ -38,16 +38,11 @@ $productInfoViewModel = $block->getData('productInfoViewModel');
                     <dd><?= $block->escapeHtml($optionValue) ?></dd>
                 <?php endif; ?>
             <?php endforeach; ?>
-            <?php 
-                $orderItemInfo =  $productInfoViewModel->getOrderItemInformation($_item->getId());
-                print_r($orderItemInfo);
-                
-                if(!empty($orderItemInfo) && $productInfoViewModel->isEnabled() && $orderItemInfo['has_auth_photo']): ?>
-                <a href="<?= $productInfoViewModel->getProductAuthenticationPhotoUrl($orderItemInfo['item_id']) ?>" class="action view">
+            
+                <a href="<?//= $productInfoViewModel->getViewProductAuthenticationPhotoUrl($orderItemInfo['item_id']) ?>" class="action view">
                     <span><?= $block->escapeHtml(__('View Authentication Photo')) ?></span>
                 </a>
-            <?php endif;
-             ?>
+            
             </dl>
         <?php endif; ?>
         <?php $addtInfoBlock = $block->getProductAdditionalInformationBlock(); ?>

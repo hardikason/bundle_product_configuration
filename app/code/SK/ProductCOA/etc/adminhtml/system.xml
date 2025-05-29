@@ -9,6 +9,10 @@
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                     <comment>Enable this feature to show the product's Certificate of Authentication to customers on the storefront.</comment>
                 </field>
+                <field id="auth_images_dir" translate="label" type="text" sortOrder="1" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Upload authentication photos in directory</label>
+                    <comment>This folder will be available in pub/media.</comment>
+                </field>
             </group>
         </section>
     </system>

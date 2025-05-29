@@ -5,7 +5,8 @@
         <catalog>
             <productcoa>
                 <enable>1</enable>
-            </productcoa>
+                <auth_images_dir>authentication_photos</auth_images_dir>
+            </productcoa>            
         </catalog>
     </default>
 </config>

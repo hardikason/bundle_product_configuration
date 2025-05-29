@@ -6,9 +6,13 @@ use Magento\Sales\Model\Order\Item as OrderItem;
 use Magento\Quote\Model\Quote\Item\ToOrderItem;
 use Magento\Catalog\Api\ProductRepositoryInterface;
 
-
 class ToOrderItemPlugin
 {
+    /**
+     * Constructor function
+     *
+     * @param ProductRepositoryInterface $productRepository
+     */
     public function __construct(
         protected ProductRepositoryInterface $productRepository
     ) {
@@ -31,8 +35,6 @@ class ToOrderItemPlugin
     ): OrderItem {
         $product = $this->productRepository->getById($item->getProductId());
         $authPhoto = $product->getData('authentication_photo');
-
-        file_put_contents(BP . '/var/log/event.log', "Plugin Authentication Photo: " . $authPhoto . "\n", FILE_APPEND);
 
         if ($authPhoto) {
             $result->setData('authentication_photo', $authPhoto);

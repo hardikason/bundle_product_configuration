@@ -2,7 +2,7 @@
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
 
     <!-- Image Uploader -->
-    <virtualType name="VirtualTypeName" type="Magento\Catalog\Model\ImageUploader">
+    <!-- <virtualType name="VirtualTypeName" type="Magento\Catalog\Model\ImageUploader">
         <arguments>
             <argument name="baseTmpPath" xsi:type="string">authentication-photo/image</argument>
             <argument name="basePath" xsi:type="string">authentication-photo/image</argument>
@@ -13,12 +13,12 @@
                 <item name="png" xsi:type="string">png</item>
             </argument>
         </arguments>
-    </virtualType>
-    <type name="SK\ProductCOA\Controller\Adminhtml\Image\Upload">
+    </virtualType> -->
+    <!-- <type name="SK\ProductCOA\Controller\Adminhtml\Image\Upload">
         <arguments>
             <argument name="imageUploader" xsi:type="object">VirtualTypeName</argument>
         </arguments>
-    </type>
+    </type> -->
     <!-- End Image Uploader -->
 
     <!-- Authentication data pass to product form -->

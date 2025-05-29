@@ -1,28 +1,101 @@
 <?php 
 /** @var ProductInfo $productInfoViewModel */
 $productInfoViewModel = $block->getData('productInfoViewModel');
-$product = $productInfoViewModel->getProductData();
+$order = $productInfoViewModel->getOrder();
 
-print_r($product);die;
-//echo $this->getProductId();
 ?>
+        <a href="javascript:history.back()"><?= $block->escapeHtml(__('Go Back')); ?></a>
+
 <?php
 /** @var \Magento\Catalog\Model\Product $product */
-//$product = $block->getProduct(); // or from ViewModel
-$imageUrl = $productInfoViewModel->getProductImage($product); // Helper or method returning image URL
-?>
 
-<div class="product-info-container">
-    <div class="product-info">
-        <div class="product-image">
-            <img src="<?= $imageUrl ?>" alt="<?= $block->escapeHtml($product->getName()) ?>">
-        </div>
-        <div class="product-details">
-            <h2><?= $block->escapeHtml($product->getName()) ?></h2>
-            <p class="p-desc"><?= $block->escapeHtml($product->getShortDescription()) ?></p>
-            <p class="p-price"><?= $block->escapeHtml(__('Price:'));?><?= $block->escapeHtml($product->getPriceInfo()->getPrice('final_price')->getAmount()->getValue()) ?> <?= $block->getCurrencySymbol(); ?></p>
-            <a href="<?= $product->getProductUrl() ?>"><?= $block->escapeHtml(__('View Product')) ?></a>
+$orderItems = $order->getAllItems();
+
+foreach ($orderItems as $index => $item):
+    $product =  $item->getProduct();
+    $imageUrl = $productInfoViewModel->getProductImage($product); // Helper or method returning image URL
+    $authPhoto = $item->getAuthenticationPhoto(); // e.g., from sales_order_item DB
+    $authPhotoUrl = $productInfoViewModel->getAuthenticationPhotoUrl($authPhoto);
+
+?>
+    <div class="product-info-container">
+        <div class="product-info">
+            <div class="product-image">
+                <img src="<?= $imageUrl ?>" alt="<?= $block->escapeHtml($item->getName()) ?>">
+            </div>
+            <div class="product-details">
+                <h2><?= $block->escapeHtml($item->getName()) ?></h2>
+                <p class="p-price"><?= $block->escapeHtml(__('Price:'));?><?= $block->escapeHtml($item->getPrice()) ?> <?= $block->getCurrencySymbol(); ?></p>
+                <?php if($item->getAuthenticationPhoto() !== null): ?>
+                <a href="#" class="modal-trigger" data-modal="auth-modal-<?= $index ?>">
+                        <?= $block->escapeHtml('View Authentication Photo') ?>
+                    </a>
+                <!-- Modal HTML -->
+                <div id="auth-modal-<?= $index ?>" class="auth-modal" style="display: none;">
+                    <div class="modal-inner-content">
+                        <span class="modal-close" data-modal="auth-modal-<?= $index ?>">&times;</span>
+                        <h2><?= $block->escapeHtml($item->getName()) ?></h2>
+                        <img src="<?= $block->escapeUrl($authPhotoUrl) ?>" alt="Authentication Photo" style="max-width: 100%;">
+                    </div>
+                </div>
+                
+                <?php endif; ?>
+            </div>
         </div>
     </div>
-</div>
 
+<?php endforeach; ?>
+
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    const triggers = document.querySelectorAll('.modal-trigger');
+    const closers = document.querySelectorAll('.modal-close');
+
+    triggers.forEach(trigger => {
+        trigger.addEventListener('click', function (e) {
+            e.preventDefault();
+            const modalId = this.getAttribute('data-modal');
+            document.getElementById(modalId).style.display = 'block';
+        });
+    });
+
+    closers.forEach(closer => {
+        closer.addEventListener('click', function () {
+            const modalId = this.getAttribute('data-modal');
+            document.getElementById(modalId).style.display = 'none';
+        });
+    });
+});
+</script>
+
+<style>
+.auth-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0,0,0,0.6);
+    z-index: 9999;
+    display: none;
+    justify-content: center;
+    align-items: center;
+}
+
+.modal-inner-content {
+    background: #fff;
+    padding: 20px;
+    max-width: 500px;
+    margin: auto;
+    position: relative;
+}
+
+.modal-close {
+    position: absolute;
+    top: 10px;
+    right: 15px;
+    font-size: 24px;
+    cursor: pointer;
+}
+</style>

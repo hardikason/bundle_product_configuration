@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * Copyright 2023 Adobe
+ * All Rights Reserved.
+ */
+-->
+<page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+    xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
+    <body>
+        <referenceBlock name="sales.order.history.extra.column.header">
+            <block name="sk_productcoa.additional.column.header" template="SK_ProductCOA::order/history/authentication_column_header.phtml"/>
+        </referenceBlock>
+
+        <referenceBlock name="sales.order.history.extra.container">
+            <block name="sk_productcoa.additional.column.data" template="SK_ProductCOA::order/history/authentication_column_data.phtml">
+                <arguments>
+                    <argument name="productInfoViewModel" xsi:type="object">SK\ProductCOA\ViewModel\ProductInfo</argument>
+                </arguments>
+            </block>
+        </referenceBlock>
+    </body>
+</page>

@@ -18,19 +18,30 @@ use Magento\Catalog\Helper\Image;
 use Magento\Sales\Api\OrderRepositoryInterface;
 use Magento\Sales\Api\OrderItemRepositoryInterface;
 use Magento\Framework\Api\SearchCriteriaBuilder;
+use Magento\Sales\Api\Data\OrderInterface;
 
 /**
  * ViewModel for Getting Product Info
  */
 class ProductInfo implements ArgumentInterface
 {
-
+    /**
+     * module enable config
+     *
+     */
     private const MODULE_ENABLED = "catalog/productcoa/enable";
 
     /**
      * Constructor function
      *
      * @param ScopeConfigInterface $scopeConfig
+     * @param UrlInterface $urlBuilder
+     * @param ProductRepositoryInterface $productRepository
+     * @param RequestInterface $request
+     * @param Image $imageHelper
+     * @param OrderRepositoryInterface $orderRepository
+     * @param OrderItemRepositoryInterface $orderItemRepository
+     * @param SearchCriteriaBuilder $searchCriteriaBuilder
      */
     public function __construct(
         protected ScopeConfigInterface $scopeConfig,
@@ -51,64 +62,75 @@ class ProductInfo implements ArgumentInterface
      */
     public function isEnabled(): string|null
     {
-        
         return $this->scopeConfig->getValue(self::MODULE_ENABLED, ScopeInterface::SCOPE_STORE);
     }
 
-    public function getProductAuthenticationPhotoUrl($orderItemId): string
+    /**
+     * Get view authentication photo url function
+     *
+     * @param string $orderItemId
+     * @return string
+     */
+    public function getViewProductAuthenticationPhotoUrl($orderItemId): string
     {
         return $this->urlBuilder->getUrl("productcoa/customer/authphoto/", ['id'=>(int)$orderItemId]);
     }
 
-    public function getProductData(): \Magento\Sales\Api\Data\OrderItemInterface
-    {
-        //$productId = (int) $this->request->getParam('id');
-        $data = $this->getOrderItemInfo();
-        return $data['itemData'];
-        //return $this->productRepository->getById((int)$data['product_id']);
-    }
-
+    /**
+     * Get Product Image Url
+     *
+     * @param ProductInterface $product
+     * @return string
+     */
     public function getProductImage(ProductInterface $product): string
     {
         return $this->imageHelper->init($product, 'product_page_image_medium')->getUrl();
     }
 
-    public function getOrderItemInfo()//: array
+    /**
+     * Get Authentication Photo Url
+     *
+     * @param string $authPhotoPath
+     * @return string
+     */
+    public function getAuthenticationPhotoUrl($authPhotoPath): string
     {
-        $itemId = (int) $this->request->getParam('id');
-       
-
-        $itemData = $this->orderItemRepository->get($itemId);
-        //$orderItems = $this->orderItemRepository->getList($searchCriteria);
-
-        // foreach ($orderItems as $childItem) {
-        //     echo 'adasd'. $childItem->getItemId(); // or any other order item data
-             $orderData = $this->orderRepository->get((int)$itemData->getOrderId());
-        
-        return [
-                'customer_id' => $orderData->getCustomerId(), 
-                'product_id' => $itemData->getProductId(),
-                'itemData' => $itemData
-            ];
-        
+        return $this->urlBuilder->getBaseUrl(['_type' => UrlInterface::URL_TYPE_MEDIA]).$authPhotoPath;
     }
 
-    public function getOrderItemInformation($parentItemId = null):array 
+    /**
+     * Get Order info
+     *
+     * @return OrderInterface|null
+     */
+    public function getOrder(): OrderInterface|null
     {
-        $searchCriteria = $this->searchCriteriaBuilder
-            ->addFilter('parent_item_id', $parentItemId)
-            ->create();
-        $orderItems = $this->orderItemRepository->getList($searchCriteria);
-        
-        $data = [];
-        foreach ($orderItems as $childItem) {
-            if($childItem->getAuthenticationPhoto()) {
-                $data['item_id'] = $childItem->getId();
-                $data['has_auth_photo'] = $childItem->getAuthenticationPhoto()?true:false;
-                return $data;
-            }    
+        $orderId = (int) $this->request->getParam('id');
+
+        try {
+            return $this->orderRepository->get($orderId);
+        } catch (\Exception $e) {
+            return null;
+        }
+    }
+
+    /**
+     * Check order has authentication photo available
+     *
+     * @param object $order
+     * @return boolean
+     */
+    public function hasAuthenticationPhoto($order):bool
+    {
+        $orderItems = $order->getAllItems();
+
+        $hasAuthenticationPhoto = false;
+        foreach ($orderItems as $item) {
+            if ($item->getAuthenticationPhoto() !== null) {
+                $hasAuthenticationPhoto = true;
+            }
         }
 
-        return $data;
+        return $hasAuthenticationPhoto;
     }
 }

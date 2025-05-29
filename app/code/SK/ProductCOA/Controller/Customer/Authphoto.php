@@ -1,14 +1,12 @@
 <?php
 namespace SK\ProductCOA\Controller\Customer;
 
-use Magento\Framework\App\ActionInterface;
 use Magento\Framework\App\RequestInterface;
-use Magento\Framework\View\Result\PageFactory;
-use Magento\Framework\Controller\ResultInterface;
 use Magento\Framework\App\Action\HttpGetActionInterface;
 use Magento\Customer\Model\Session as CustomerSession;
 use Magento\Framework\Controller\ResultFactory;
 use SK\ProductCOA\ViewModel\ProductInfo;
+use Magento\Framework\Message\ManagerInterface;
 
 class Authphoto implements HttpGetActionInterface
 {
@@ -17,12 +15,16 @@ class Authphoto implements HttpGetActionInterface
      *
      * @param CustomerSession $customerSession
      * @param ResultFactory $resultFactory
+     * @param RequestInterface $request
+     * @param ProductInfo $productInfo
+     * @param ManagerInterface $messageManager
      */
     public function __construct(
         protected CustomerSession $customerSession,
         protected ResultFactory $resultFactory,
         protected RequestInterface $request,
         protected ProductInfo $productInfo,
+        protected ManagerInterface $messageManager
     ) {
     }
 
@@ -34,19 +36,23 @@ class Authphoto implements HttpGetActionInterface
     public function execute()
     {
         // Redirect to login if customer is not logged in
+        /** @var \Magento\Framework\Controller\Result\Redirect $resultRedirect */
+        $resultRedirect = $this->resultFactory->create(ResultFactory::TYPE_REDIRECT);
+
         if (!$this->customerSession->isLoggedIn()) {
-            /** @var \Magento\Framework\Controller\Result\Redirect $resultRedirect */
-            $resultRedirect = $this->resultFactory->create(ResultFactory::TYPE_REDIRECT);
             $resultRedirect->setPath('customer/account/login');
             return $resultRedirect;
         }
 
         $customer = $this->customerSession->getCustomer();
 
-        $data = $this->productInfo->getOrderItemInfo();
-        if($data['customer_id'] != $customer->getId()) {
-            /** @var \Magento\Framework\Controller\Result\Redirect $resultRedirect */
-            $resultRedirect = $this->resultFactory->create(ResultFactory::TYPE_REDIRECT);
+        $order = $this->productInfo->getOrder();
+        if (!$order) {
+            $this->messageManager->addErrorMessage(__('Order does not exist.'));
+            $resultRedirect->setPath('sales/order/history');
+            return $resultRedirect;
+        }
+        if ($order->getCustomerId() != $customer->getId()) {
             $resultRedirect->setPath('customer/account/login');
             return $resultRedirect;
         }
